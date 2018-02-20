@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:3.0.7-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+      imagePullSecrets:
+      - name: dockerhub

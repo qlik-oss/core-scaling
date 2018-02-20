@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mira
+  labels:
+    app: mira
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mira
+    spec:
+      containers:
+      - name: mira
+        image: qlikea/mira:0.0.9
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9100
+        env:
+        - name: MIRA_MODE
+          value: kubernetes
+        - name: MIRA_LOG_LEVEL
+          value: info
+      - name: kubectl
+        image: gcr.io/google_containers/kubectl:v0.18.0-350-gfb3305edcf6c1a      
+        args: [ "proxy", "-p", "8001" ]
+        imagePullPolicy: IfNotPresent        
+      imagePullSecrets:
+      - name: dockerhub
