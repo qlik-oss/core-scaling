@@ -20,18 +20,6 @@ spec:
           value: debug
         - name: SESSION_COOKIE_NAME
           value: custom-analytics
-        - name: KIBANA_HOST
-          value: 127.0.0.1
-        - name: KIBANA_PORT
-          value: "5601"
-        - name: GRAFANA_HOST
-          value: 127.0.0.1
-        - name: GRAFANA_PORT
-          value: "5601"
-        - name: VISUALIZER_HOST
-          value: 127.0.0.1
-        - name: VISUALIZER_PORT
-          value: "8080"
         - name: QIX_SESSION_HOST
           value: qix-session
         - name: QIX_SESSION_PORT
