@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: openresty
+  labels:
+    app: openresty
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: openresty
+    spec:
+      containers:
+      - name: openresty
+        image: qlikea/qliktive-custom-analytics-openresty:hca-k8s-dns-400
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ERROR_LEVEL
+          value: debug
+        - name: SESSION_COOKIE_NAME
+          value: custom-analytics
+        - name: KIBANA_HOST
+          value: 127.0.0.1
+        - name: KIBANA_PORT
+          value: "5601"
+        - name: GRAFANA_HOST
+          value: 127.0.0.1
+        - name: GRAFANA_PORT
+          value: "5601"
+        - name: VISUALIZER_HOST
+          value: 127.0.0.1
+        - name: VISUALIZER_PORT
+          value: "8080"
+        - name: QIX_SESSION_HOST
+          value: qix-session
+        - name: QIX_SESSION_PORT
+          value: "9455"
+        - name: AUTH_HOST
+          value: auth
+        - name: AUTH_PORT
+          value: "3000"
+        - name: AUTH_STRATEGY
+          value: local
+        ports:
+        - containerPort: 443
+      imagePullSecrets:
+      - name: dockerhub

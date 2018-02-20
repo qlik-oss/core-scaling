@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: qix-session
+  labels:
+    app: qix-session
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: qix-session
+    spec:
+      containers:
+      - name: qix-session
+        image: qlikea/qliktive-qix-session-service:0.0.1-61
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9455
+      imagePullSecrets:
+      - name: dockerhub
