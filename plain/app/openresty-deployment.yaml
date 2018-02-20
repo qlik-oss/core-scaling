@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: openresty
-        image: qlikea/qliktive-custom-analytics-openresty:master-392
+        image: qlikea/qliktive-custom-analytics-openresty:remove_auth-406
         imagePullPolicy: IfNotPresent
         env:
         - name: ERROR_LEVEL
