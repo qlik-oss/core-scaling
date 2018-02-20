@@ -16,7 +16,7 @@ spec:
       - name: engine
         image: qlikea/engine:12.136.0
         imagePullPolicy: IfNotPresent
-        args: ["-S", "ValidateJsonWebTokens=2", "-S", "JsonWebTokenSecret=Insert-Long-GUID-For-JWT-Secret"]
+        args: ["-S", "AcceptEULA=no" ] # change to 'yes' if you accept the Qlik Core EULA
         ports:
         - containerPort: 9076
         - containerPort: 9090

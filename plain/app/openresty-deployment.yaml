@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: openresty
-        image: qlikea/qliktive-custom-analytics-openresty:hca-k8s-dns-400
+        image: qlikea/qliktive-custom-analytics-openresty:master-392
         imagePullPolicy: IfNotPresent
         env:
         - name: ERROR_LEVEL
@@ -36,12 +36,6 @@ spec:
           value: qix-session
         - name: QIX_SESSION_PORT
           value: "9455"
-        - name: AUTH_HOST
-          value: auth
-        - name: AUTH_PORT
-          value: "3000"
-        - name: AUTH_STRATEGY
-          value: local
         ports:
         - containerPort: 443
       imagePullSecrets:
