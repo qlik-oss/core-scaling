@@ -8,9 +8,9 @@ The sections below cover how to get the deployment up on a developer machine usi
 
 ## Install Tools
 
-- Install kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl  
+- Install kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl
   (Verified with v1.8.0)
-- Install Minikube - https://kubernetes.io/docs/tasks/tools/install-minikube/#install-minikube  
+- Install Minikube - https://kubernetes.io/docs/tasks/tools/install-minikube/#install-minikube
   (Verified with v0.24.1)
 
 ## Start the Minikube VM
@@ -43,9 +43,6 @@ Manually create secrets in the Kubernetes cluster with (replace Docker Hub creds
 ```sh
 cd plain
 kubectl create secret docker-registry dockerhub --docker-username=... --docker-password=... --docker-email=...
-kubectl create secret generic accounts --from-file=../secrets/ACCOUNTS
-kubectl create secret generic jwt-secret --from-file=../secrets/JWT_SECRET
-kubectl create secret generic cookie-signing --from-file=../secrets/COOKIE_SIGNING
 ```
 
 ## Deploy
@@ -55,8 +52,6 @@ Deploy services and deployments to the cluster with:
 ```sh
 $ cd plain
 $ kubectl create -f app/
-deployment "auth" created
-service "auth" created
 deployment "engine" created
 service "engine" created
 deployment "mira" created
@@ -65,8 +60,6 @@ deployment "openresty" created
 service "openresty" created
 deployment "qix-session" created
 service "qix-session" created
-deployment "redis" created
-service "redis" created
 ```
 
 ## Launch the Minikube Dashboard
@@ -85,5 +78,4 @@ Chek the IP address of the Minkube VM. For example, with:
 minikube ip
 ```
 
-Open a browser and navigate to https://<Minikube VM IP>:31704. Sign in with the "local" identity provided (e.g.
-`admin:password`) and the Assisted Prescription UI should be displayed.
+Open a browser and navigate to https://<Minikube VM IP>:31704.
