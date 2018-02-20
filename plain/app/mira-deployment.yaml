@@ -23,8 +23,8 @@ spec:
         - name: MIRA_LOG_LEVEL
           value: info
       - name: kubectl
-        image: gcr.io/google_containers/kubectl:v0.18.0-350-gfb3305edcf6c1a      
+        image: gcr.io/google_containers/kubectl:v0.18.0-350-gfb3305edcf6c1a
         args: [ "proxy", "-p", "8001" ]
-        imagePullPolicy: IfNotPresent        
+        imagePullPolicy: IfNotPresent
       imagePullSecrets:
       - name: dockerhub
