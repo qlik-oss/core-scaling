@@ -100,9 +100,6 @@ kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*
 
 ```bash
 kubectl get hpa
-
-NAME      REFERENCE            TARGETS     MINPODS   MAXPODS   REPLICAS   AGE
-podinfo   Deployment/podinfo   899m / 10   2         10        2          1m
 ```
 
 Apply some load on the `engine` service with [workout](http://LINKEHERE)

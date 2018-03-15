@@ -15,6 +15,16 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - engine
+            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: engine
         image: "qlikea/engine:12.151.0"
