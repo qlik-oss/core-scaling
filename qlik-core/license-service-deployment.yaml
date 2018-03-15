@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: license-service
+  labels:
+    app: license-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: license-service
+    spec:
+      containers:
+      - name: license-service
+        image: "qlikea/license-service:0.3.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9200
+      imagePullSecrets:
+      - name: dockerhub
