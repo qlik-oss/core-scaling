@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: license-service
+  labels:
+    app: license-service
+spec:
+  type: NodePort
+  ports:
+    - port: 9200
+      targetPort: 9200
+      protocol: TCP
+      name: http
+  selector:
+    app: license-service

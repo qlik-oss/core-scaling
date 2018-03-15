@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: engine
+  labels:
+    app: engine
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: engine
+        service: engine
+        qix-engine: ""
+      annotations:
+        prometheus.io/scrape: 'true'
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - engine
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: engine
+        image: "qlikea/engine:12.151.0"
+        args: [
+          "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
+          "-S", "LicenseServiceUrl=http://license-service:9200",
+          "-S", "DocumentDirectory=/apps"
+        ]
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9076
+        - containerPort: 9090
+        volumeMounts:
+          - mountPath: /apps
+            name: document-storage
+      volumes:
+        - name: document-storage
+          emptyDir: {}
+      initContainers:
+        - name: volume-mount-owner
+          image: alpine
+          # Ensure the owner is nobody:nogroup
+          command: ["sh", "-c", "chown -R 65534:65534 /apps"]
+          volumeMounts:
+            - name: document-storage
+              mountPath: /apps
+      imagePullSecrets:
+      - name: dockerhub

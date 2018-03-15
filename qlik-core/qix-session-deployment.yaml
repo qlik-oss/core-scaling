@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: qix-session
+  labels:
+    app: qix-session
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: qix-session
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/v1/metrics'
+    spec:
+      containers:
+      - name: qix-session
+        image: "qlikea/qliktive-qix-session-service:0.0.1-146"
+        env:
+        - name: SESSIONS_PER_ENGINE_THRESHOLD
+          value: "20"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9455
+      imagePullSecrets:
+      - name: dockerhub
