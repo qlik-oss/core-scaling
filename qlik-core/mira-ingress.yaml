@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: qix-session-ingress
+  name: mira-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/ingress.class: "nginx"
@@ -9,7 +9,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /session/
+      - path: /mira/
         backend:
-          serviceName: qix-session
-          servicePort: 9455
+          serviceName: mira
+          servicePort: 9100
