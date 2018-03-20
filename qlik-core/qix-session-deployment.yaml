@@ -20,6 +20,8 @@ spec:
         env:
         - name: SESSIONS_PER_ENGINE_THRESHOLD
           value: "20"
+        - name: SESSION_STRATEGY
+          value: "roundrobin"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9455

@@ -43,6 +43,7 @@ rmcerts:
 .PHONY: deploy
 deploy:
 	kubectl create -f ./namespaces.yaml
-	kubectl create -f ./metrics-server
 	kubectl create -f ./prometheus
 	kubectl create -f ./custom-metrics-api
+	kubectl create -f ./rbac-config.yaml
+	kubectl create -f ./qlik-core

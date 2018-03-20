@@ -5,7 +5,7 @@ metadata:
   labels:
     app: qix-session
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 9455
       targetPort: 9455
