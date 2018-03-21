@@ -1,4 +1,9 @@
 # k8s-prom-hpa
+
+### Prerequisites
+
+This demo asumes that you have a kubernetes cluster with version 1.9.3 or later with a metrics server deployed running somewhere that supports autoscaling of nodes.
+
 Make sure you are able to query the metrics api: 
 
 ```bash
@@ -31,22 +36,16 @@ Increase priveleges to be able to deploy prometheus
 gcloud info | grep Account
 ```
 
-Take the output of tha above command and increase priveleges: 
+Take the output of the above command and increase priveleges: 
 
 ```bash
-kubectl create clusterrolebinding myname-cluster-admin-binding --clusterrole=cluster-admin --user=<OUTPUT FROM ABOVE>
+kubectl create clusterrolebinding myname-cluster-admin-binding --clusterrole=cluster-admin --user=<ACCOUNT FROM ABOVE>
 ```
 
 Deploy Prometheus v2 in the `monitoring` namespace:
 
 ```bash
 kubectl create -f ./prometheus
-```
-
-Generate the TLS certificates needed by the Prometheus adapter:
-
-```bash
-make certs
 ```
 
 Deploy the Prometheus custom metrics API adapter:
@@ -97,12 +96,20 @@ Get the total qix_active_sessions from the custom metrics API:
 kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/qix_active_sessions" | jq .
 ```
 
+Check that the Horizontal Pod Autoscaler is active and check that you have 0 sessions on your engines.
 
 ```bash
 kubectl get hpa
 ```
 
-Apply some load on the `engine` service with [workout](http://LINKEHERE)
+Deploy the ingress controller allowing us to reach the different services in our cluster. Most importantly allowing the `core-qix-session-workout`
+to reach the engines and create sessions.
+
+```bash
+kubectl create -f ./ingress
+```
+
+Apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-ea/core-qix-session-workout)
 
 ```bash
 Code for workout
@@ -118,9 +125,8 @@ After the load tests finishes, the HPA down scales the deployment to it's initia
 
 You may have noticed that the autoscaler doesn't react immediately to usage spikes. 
 By default the metrics sync happens once every 30 seconds and scaling up/down can 
-only happen if there was no rescaling within the last 3-5 minutes. 
-In this way, the HPA prevents rapid execution of conflicting decisions and gives time for the 
-Cluster Autoscaler to kick in.
+only happen if there was no rescaling within the last 3-5 minutes with different timers for scaling the pods and the nodes. 
+In this way, the HPA prevents rapid execution of conflicting decisions.
 
 ### Conclusions
 
