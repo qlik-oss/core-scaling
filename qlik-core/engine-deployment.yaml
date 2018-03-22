@@ -24,6 +24,7 @@ spec:
                 values:
                 - engine
             topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: 600
       containers:
       - name: engine
         image: "qlikea/engine:12.151.0"
@@ -39,9 +40,18 @@ spec:
         volumeMounts:
           - mountPath: /apps
             name: document-storage
+          - name: engine-prestop-hook
+            mountPath: /engine-prestop-hook
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "/engine-prestop-hook/engine-prestop-hook.sh"]
       volumes:
         - name: document-storage
           emptyDir: {}
+        - name: engine-prestop-hook
+          configMap:
+            name: engine-prestop-hook
       initContainers:
         - name: volume-mount-owner
           image: alpine
