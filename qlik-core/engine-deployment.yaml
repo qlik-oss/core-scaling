@@ -28,7 +28,7 @@ spec:
       - name: engine
         image: "qlikea/engine:12.151.0"
         args: [
-          "-S", "AcceptEULA=yes", # change to 'yes' if you accept the Qlik Core EULA
+          "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
           "-S", "LicenseServiceUrl=http://license-service:9200",
           "-S", "DocumentDirectory=/apps"
         ]
