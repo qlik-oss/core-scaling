@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         app: ingress-nginx
+        restart: restart18
       annotations:
         prometheus.io/port: '10254'
         prometheus.io/scrape: 'true'
