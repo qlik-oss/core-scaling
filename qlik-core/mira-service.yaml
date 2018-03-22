@@ -5,7 +5,7 @@ metadata:
   labels:
     app: mira
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 9100
       targetPort: 9100

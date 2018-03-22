@@ -10,7 +10,6 @@ spec:
     metadata:
       labels:
         app: engine
-        service: engine
         qix-engine: ""
       annotations:
         prometheus.io/scrape: 'true'

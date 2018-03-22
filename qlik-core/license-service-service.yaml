@@ -5,7 +5,7 @@ metadata:
   labels:
     app: license-service
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 9200
       targetPort: 9200
