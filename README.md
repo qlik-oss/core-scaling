@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-This demo asumes that you have a kubernetes cluster with version 1.9.3 or later with a metrics server deployed running somewhere that supports autoscaling of nodes.
+This demo asumes that you have a kubernetes cluster with version 1.9.3 or later with a metrics server deployed running somewhere that supports and have enabled autoscaling of nodes.
 
 Make sure you are able to query the metrics api: 
 
@@ -109,19 +109,45 @@ to reach the engines and create sessions.
 kubectl create -f ./ingress
 ```
 
-Apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-ea/core-qix-session-workout)
+Now we can apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-ea/core-qix-session-workout)
+
+First we need to clone the repository and change folder to the repository directory.
+
+then we need to get the external ip-adress from the nginx-controller which acts as the entrypoint to the cluster.
+
+```
+kubectl get service ingress-nginx --namespace ingress-nginx
+```
+
+Copy the external-ip and change the `gateway` field in the `configs/scaling.json` file to your ingress-nginx controllers external ip.
+
+Then we can start putting some load on our engines.
 
 ```bash
-Code for workout
+node cli.js -c ./configs/scaling.json
 ```
 
-After a few minutes the HPA begins to scale up the deployment:
+This will create 50 sessions, one new session every 10 seconds with no selections being made. You can change the settings in the `configs/scaling.json` file if you want to scale up to more sessions or change the speed that new sessions are added with.
 
+The HPA is configued to start scaling new engine pods when the average selection on the engines are more than 10 sessions. And the session-service is configured to place a max of 20 sessions on one engine. The engine deployment itself is configured to only accept being on a node that does not have another engine running on it already.
+
+Depending on how many nodes you already have it might put the new pod(s) on a node that already exists (that does not have an engine) or it might need to spin up one or several new nodes to be able to deploy the engine pod.
+
+You can see the status of the scale-up by running these commands in a different terminal:
+
+```bash
+kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/qix_active_sessions"
 ```
-kubectl describe hpa
+to see the metrics value of qix_active_sessions or 
+
+```bash
+kubectl get hpa
 ```
 
-After the load tests finishes, the HPA down scales the deployment to it's initial replicas.
+to see the status of the Horizontal Pod Autoscaler.
+
+When all 50 sessions have been loaded on the engines you can stop the `core-qix-session-workout` by pressing `ctrl + c` in the terminal it is running inside.
+the HPA will then scale down the deployment to it's initial number of replicas and nodes.
 
 You may have noticed that the autoscaler doesn't react immediately to usage spikes. 
 By default the metrics sync happens once every 30 seconds and scaling up/down can 
