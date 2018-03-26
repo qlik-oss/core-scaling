@@ -6,7 +6,7 @@ data:
   engine-prestop-hook.sh: |-
     while true
     do
-      sessionCount = $(curl --silent localhost:9090/metrics | grep -oP '(?<=qix_active_sessions )\d+(?=\.\d*)')
+      sessionCount=$(curl --silent localhost:9090/metrics | grep -oP '(?<=qix_active_sessions )\d+(?=\.\d*)')
       if [ "$sessionCount" -eq "0" ]
       then
         exit 0
