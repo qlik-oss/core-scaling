@@ -52,7 +52,7 @@ spec:
         - name: engine-prestop-hook
           configMap:
             name: engine-prestop-hook
-            defaultMode: 0777
+            defaultMode: 0755
       initContainers:
         - name: volume-mount-owner
           image: alpine
