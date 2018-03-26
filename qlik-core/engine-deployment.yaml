@@ -27,7 +27,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: engine
-        image: "qlikea/engine:12.151.0"
+        image: "qlikea/engine:12.156.0"
         args: [
           "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
           "-S", "LicenseServiceUrl=http://license-service:9200",
