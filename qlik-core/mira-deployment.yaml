@@ -20,6 +20,8 @@ spec:
         env:
         - name: MIRA_MODE
           value: kubernetes
+        - name: MIRA_ENGINE_UPDATE_INTERVAL
+          value: "5000"
       - name: kubectl
         image: gcr.io/google_containers/kubectl:v0.18.0-350-gfb3305edcf6c1a
         args: [ "proxy", "-p", "8001" ]
