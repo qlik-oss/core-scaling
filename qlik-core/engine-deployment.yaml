@@ -38,8 +38,8 @@ spec:
         - containerPort: 9076
         - containerPort: 9090
         volumeMounts:
-          - mountPath: /apps
-            name: document-storage
+          - mountPath: /doc
+            name: app-nfs
           - name: engine-prestop-hook
             mountPath: /engine-prestop-hook
         lifecycle:
@@ -53,6 +53,9 @@ spec:
           configMap:
             name: engine-prestop-hook
             defaultMode: 0755
+        - name: app-nfs
+          persistentVolumeClaim:
+            claimName: nfs
       initContainers:
         - name: volume-mount-owner
           image: alpine
