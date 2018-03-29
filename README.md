@@ -2,6 +2,20 @@
 
 ### Prerequisites
 
+Setup GKE (Google Kubernetes Engine) by following this guide: https://cloud.google.com/kubernetes-engine/docs/quickstart
+
+You need to set the variable GCLOUD_PROJECT, either in console or in the `settings.config` file.
+
+Create your cluster with the following command: 
+```bash
+gcloud container --project "api-project-97421487144" clusters create "hcacluster" --zone "europe-west2-a" --username "admin" --cluster-version "1.9.6-gke.0" --machine-type "n1-standard-1" --image-type "COS" --disk-size "50" --scopes "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" --num-nodes "3" --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --enable-autoscaling --min-nodes "2" --max-nodes "6" --addons KubernetesDashboard
+```
+
+Create a persistent disk for Apps: 
+
+`gcloud compute disks create --size=10GB --zone=europe-west2-a app-nfs-disk`
+
+
 This demo asumes that you have a kubernetes cluster with version 1.9.3 or later with a metrics server deployed running somewhere that supports and have enabled autoscaling of nodes.
 
 Make sure you are able to query the metrics api: 
@@ -64,6 +78,19 @@ Get the FS usage for all the pods in the `monitoring` namespace:
 
 ```bash
 kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/monitoring/pods/*/fs_usage_bytes" | jq .
+```
+
+### Ingress routing
+
+Deploy Ingress:
+```bash
+kubectl create -f ./ingress
+```
+
+### Volumes
+Add volumes:
+```bash
+kubectl create -f ./volume
 ```
 
 ### Auto Scaling based on custom metrics
@@ -153,6 +180,19 @@ You may have noticed that the autoscaler doesn't react immediately to usage spik
 By default the metrics sync happens once every 30 seconds and scaling up/down can 
 only happen if there was no rescaling within the last 3-5 minutes with different timers for scaling the pods and the nodes. 
 In this way, the HPA prevents rapid execution of conflicting decisions.
+
+### Delete cluster
+Remove the cluster with:
+```bash
+gcloud container clusters delete <CLUSTER-NAME>
+```
+
+Remove the volume:
+```bash
+gcloud compute disks delete app-nfs-disk
+```
+
+
 
 ### Conclusions
 
