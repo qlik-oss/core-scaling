@@ -8,4 +8,3 @@ kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-ad
 kubectl create -f ./prometheus
 kubectl create -f ./custom-metrics-api
 kubectl create -f ./ingress
-kubectl create -f ./rbac-config.yaml
