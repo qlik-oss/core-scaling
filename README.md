@@ -4,7 +4,7 @@
 
 * Setup GKE (Google Kubernetes Engine) by following this guide: https://cloud.google.com/kubernetes-engine/docs/quickstart
 
-* Modify the `settings.config` for your needs. Do note that you **have to add your Project name**, set with the variable GCLOUD_PROJECT.
+* Modify the `settings.config` for your needs. Do note that you **have to add your Project name**. Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-PROJECT-HERE}"` add your project name after `:-`
 
 *  Accept the EULA, by modifying the file: `./qlik-core/engine-deployment.yaml`
 
