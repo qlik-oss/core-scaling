@@ -129,10 +129,10 @@ kubectl get hpa
 
 ## Add apps to the engine
 
-Run the seeding script to load the apps in `./app` catalogue to the cluster.
+Run the seeding script to load the docs in `./doc` catalogue to the cluster.
 
 ```bash
-./app-seed.sh
+./doc-seed.sh
 ```
 
 ## Add load to the cluster
