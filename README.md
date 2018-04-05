@@ -127,6 +127,14 @@ Check that the HPA (Horizontal Pod Autoscaler), which is responsible for the sca
 kubectl get hpa
 ```
 
+## Add apps to the engine
+
+Run the seeding script to load the apps in `./app` catalogue to the cluster.
+
+```bash
+./app-seed.sh
+```
+
 ## Add load to the cluster
 
 Now we can apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-ea/core-qix-session-workout)
