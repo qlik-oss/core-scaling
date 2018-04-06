@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: qix-session
-        image: "qlikea/qliktive-qix-session-service:0.0.1-164"
+        image: "qlikcore/qix-session-placement-service:0.0.1-170"
         env:
         - name: SESSIONS_PER_ENGINE_THRESHOLD
           value: "20"

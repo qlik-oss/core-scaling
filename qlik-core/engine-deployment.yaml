@@ -27,7 +27,7 @@ spec:
       terminationGracePeriodSeconds: 600
       containers:
       - name: engine
-        image: "qlikea/engine:12.157.0"
+        image: "qlikcore/engine:12.160.0"
         args: [
           "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
           "-S", "LicenseServiceUrl=http://license-service:9200",
