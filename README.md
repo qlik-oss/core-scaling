@@ -109,7 +109,7 @@ to reach the engines and create sessions.
 kubectl create -f ./ingress
 ```
 
-Now we can apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-ea/core-qix-session-workout)
+Now we can apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-oss/core-qix-session-workout)
 
 First we need to clone the repository and change folder to the repository directory.
 

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: mira
-        image: "qlikea/mira:0.1.1-2131"
+        image: "qlikcore/mira:0.1.1-2149"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9100

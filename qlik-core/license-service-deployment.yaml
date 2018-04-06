@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: license-service
-        image: "qlikea/license-service:0.3.0"
+        image: "qlikcore/licenses:0.0.1"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9200
