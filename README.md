@@ -1,4 +1,4 @@
-# k8s-prom-hpa
+# Autoscaling Kubernetes on GKE
 
 ### Prerequisites
 
