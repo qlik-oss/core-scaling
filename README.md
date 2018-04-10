@@ -30,7 +30,7 @@ Pods metrics:
 ```bash
 kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods" | jq .
 ```
-
+It might take some time before the metrics api finds the new metrics.
 
 ### Option 1 - Setting up Custom Metrics Server with a script
 
@@ -39,7 +39,7 @@ Run the `deploy.sh` script:
 ./deploy.sh
 ```
 
-Continue with chapter [Auto Scaling based on custom metrics](#auto-scaling-based-on-custom-metrics)
+Continue with chapter [Add apps to the engine](#add-apps-to-the-engine)
 
 ### Option 2 - Setting up Custom Metrics Server step by step
 
@@ -82,6 +82,7 @@ After the pods is in a ready state we should now be able to list the custom metr
 ```bash
 kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1" | jq .
 ```
+It might take some time before the metrics api finds the qix metrics 
 
 ### Ingress routing
 
@@ -91,9 +92,25 @@ Deploy the ingress controller allowing us to reach the qix-session services and 
 kubectl create -f ./ingress
 ```
 
+### NFS volumes
+
+Deploy the NFS server enabling us to have read/write volumes reachable by the engine pods.
+
+```bash
+kubectl create -f ./nfs-volumes
+```
+
+## Add apps to the engine
+
+Run the seeding script to load the docs in `./doc` catalogue to the cluster.
+
+```bash
+./doc-seed.sh
+```
+
 ## Auto Scaling based on custom metrics
 
-Let's deploy Qlik Core and start to scale based on Qix active sessions.
+Now let's deploy Qlik Core and start to scale based on Qix active sessions.
 
 Start by adding ClusterRole for the Mira service
 ```bash
@@ -125,14 +142,6 @@ Check that the HPA (Horizontal Pod Autoscaler), which is responsible for the sca
 
 ```bash
 kubectl get hpa
-```
-
-## Add apps to the engine
-
-Run the seeding script to load the docs in `./doc` catalogue to the cluster.
-
-```bash
-./doc-seed.sh
 ```
 
 ## Add load to the cluster
