@@ -6,9 +6,19 @@
 
 * Modify the `settings.config` for your needs. Do note that you **have to add your Project name**. Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-PROJECT-HERE}"` add your project name after `:-`
 
-*  Accept the EULA, by modifying the file: `./qlik-core/engine-deployment.yaml`
+* Accept the EULA, by modifying the file: `./qlik-core/engine-deployment.yaml`
+
+* [jq](https://stedolan.github.io/jq/) to make the printout more readable.
+
+## Issues
+
+Before reporting an issue have a look in the [Known issues](#known-issues) and see if that can help you. 
 
 ## Create GKE cluster
+
+!!! Note "Deployment delays"
+    When deploying there is a time delay before the services are up and running. If a command fails, please
+    wait 30 seconds and try again.
 
 Now create your cluster with the following command: 
 ```bash
@@ -30,7 +40,6 @@ Pods metrics:
 ```bash
 kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods" | jq .
 ```
-It might take some time before the metrics api finds the new metrics.
 
 ### Option 1 - Setting up Custom Metrics Server with a script
 
@@ -82,7 +91,6 @@ After the pods is in a ready state we should now be able to list the custom metr
 ```bash
 kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1" | jq .
 ```
-It might take some time before the metrics api finds the qix metrics 
 
 ### Ingress routing
 
@@ -195,4 +203,8 @@ Remove the cluster with:
 ```
 
 ### Known issues
-If you are getting issues with the nginx deployment, you might have used all your public IP's. Make some public IP's available by clearing up here: https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list
+* If you are getting issues with the nginx deployment, you might have used all your public IP's. Make some public IP's available by clearing up here: https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list
+
+* If you are getting issues when deploying Prometheus it could be an username issue. Your username is case sensitive. If you get an error message, this should contain your actual username. Use this username and run this command before redeploying Prometheus. `kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=<YOUR-USER-NAME>`
+
+* If you are running bash for Windows you might get an issue with incorrect paths when querying kubectl for metrics, try using CMD instead. 
