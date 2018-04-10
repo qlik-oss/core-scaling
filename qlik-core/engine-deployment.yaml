@@ -31,15 +31,15 @@ spec:
         args: [
           "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
           "-S", "LicenseServiceUrl=http://license-service:9200",
-          "-S", "DocumentDirectory=/apps"
+          "-S", "DocumentDirectory=/doc"
         ]
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9076
         - containerPort: 9090
         volumeMounts:
-          - mountPath: /apps
-            name: document-storage
+          - mountPath: /doc
+            name: app-nfs
           - name: engine-prestop-hook
             mountPath: /engine-prestop-hook
         lifecycle:
@@ -47,19 +47,20 @@ spec:
             exec:
               command: ["sh", "-c", "/engine-prestop-hook/engine-prestop-hook.sh"]
       volumes:
-        - name: document-storage
-          emptyDir: {}
         - name: engine-prestop-hook
           configMap:
             name: engine-prestop-hook
             defaultMode: 0755
+        - name: app-nfs
+          persistentVolumeClaim:
+            claimName: nfs
       initContainers:
         - name: volume-mount-owner
           image: alpine
           # Ensure the owner is nobody:nogroup
-          command: ["sh", "-c", "chown -R 65534:65534 /apps"]
+          command: ["sh", "-c", "chown -R 65534:65534 /doc"]
           volumeMounts:
-            - name: document-storage
-              mountPath: /apps
+            - name: app-nfs
+              mountPath: /doc
       imagePullSecrets:
       - name: dockerhub
