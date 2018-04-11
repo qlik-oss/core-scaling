@@ -152,6 +152,21 @@ Check that the HPA (Horizontal Pod Autoscaler), which is responsible for the sca
 kubectl get hpa
 ```
 
+## Monitor the cluster
+Before we start adding load to the cluster let's deploy Grafana so we can see how the cluster is reacting
+
+```bash
+kubectl create -f ./grafana
+```
+
+Expose the grafana web server on a local port using the port-forward-grafana.sh script.
+
+```bash
+./port-forward-grafana.sh
+```
+
+Now we can view grafana on http://localhost:3000
+
 ## Add load to the cluster
 
 Now we can apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-oss/core-qix-session-workout)
