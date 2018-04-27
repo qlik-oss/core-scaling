@@ -13,3 +13,5 @@ gcloud container --project $GCLOUD_PROJECT clusters create $K8S_CLUSTER \
   --subnetwork "default" --enable-autoscaling --min-nodes $GCLOUD_MIN_NODES \
   --max-nodes $GCLOUD_MAX_NODES --addons KubernetesDashboard &&
 gcloud compute disks create --size=10GB --zone=$GCLOUD_ZONE app-nfs-disk
+gcloud container node-pools create monitoring --cluster=$K8S_CLUSTER \
+  --machine-type=$GCLOUD_MACHINE_TYPE --num-nodes=1
