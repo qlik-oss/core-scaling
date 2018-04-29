@@ -17,6 +17,8 @@ spec:
         prometheus.io/scrape: 'false'
     spec:
       serviceAccountName: prometheus
+      nodeSelector:
+       cloud.google.com/gke-nodepool : monitoring
       containers:
       - name: prometheus
         image: prom/prometheus:v2.1.0
@@ -24,7 +26,7 @@ spec:
         command:
           - prometheus
           - --config.file=/etc/prometheus/prometheus.yml
-          - --storage.tsdb.retention=1h
+          - --storage.tsdb.retention=4h
         ports:
         - containerPort: 9090
           protocol: TCP
