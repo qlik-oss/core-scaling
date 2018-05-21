@@ -14,6 +14,17 @@
 
 Before reporting an issue have a look in the [Known issues](#known-issues) and see if that can help you. 
 
+
+## Setup of use case
+
+There are two ways to setup this use case. 
+* You can deploy everything with the following command, and the go to [Add load to the cluster](#add-load-to-the-cluster)
+
+```bash
+./run.sh deploy
+```
+* You can follow along with step by step guide below, with description of every step.
+
 ## Create GKE cluster
 
 !!! Note "Deployment delays"
@@ -22,7 +33,7 @@ Before reporting an issue have a look in the [Known issues](#known-issues) and s
 
 Now create your cluster with the following command: 
 ```bash
-./create-cluster.sh
+./run.sh create
 ```
 
 This command will take some time, since now the GKE cluster and compute volume is being created.
@@ -41,16 +52,7 @@ Pods metrics:
 kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods" | jq .
 ```
 
-### Option 1 - Setting up Custom Metrics Server with a script
-
-Run the `deploy.sh` script:
-```bash
-./deploy.sh
-```
-
-Continue with chapter [Add apps to the engine](#add-apps-to-the-engine)
-
-### Option 2 - Setting up Custom Metrics Server step by step
+### Setting up Custom Metrics Server
 
 Now we can scale on the built-in metrics which is CPU and Memory, but in order to scale based on custom metrics you need to have two components. 
 One component that collects metrics from your applications and stores them the [Prometheus](https://prometheus.io) in a time series database.
@@ -63,15 +65,9 @@ First, we need to create the namespaces for metrics and Ingress:
 kubectl create -f ./namespaces.yaml
 ```
 
-Increase priveleges to be able to deploy prometheus. Get your account name with: 
+Increase priveleges to be able to deploy prometheus.
 ```bash
-gcloud info | grep Account
-```
-
-Take the output of the above command and increase priveleges: 
-
-```bash
-kubectl create clusterrolebinding myname-cluster-admin-binding --clusterrole=cluster-admin --user=<ACCOUNT FROM ABOVE>
+kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
 ```
 
 Deploy Prometheus:
@@ -113,7 +109,7 @@ kubectl create -f ./nfs-volumes
 Run the seeding script to load the docs in `./doc` catalogue to the cluster.
 
 ```bash
-./doc-seed.sh
+./run.sh docs
 ```
 
 ## Auto Scaling based on custom metrics
@@ -125,13 +121,6 @@ Start by adding ClusterRole for the Mira service
 kubectl create -f ./rbac-config.yaml
 ```
 
-The Docker images that are being used are not public, so you must add a secret to Kubernetes to be able to pull these images from Docker Hub.
-
-To add this secret to Kubernetes, run the following command:
-
-```bash
-kubectl create secret docker-registry dockerhub --docker-username=<your-name> --docker-password=<your-password> --docker-email=<your-email>
-```
 Deploy Qlik Core:
 ```bash
 kubectl create -f ./qlik-core
@@ -159,10 +148,10 @@ Before we start adding load to the cluster let's deploy Grafana so we can see ho
 kubectl create -f ./grafana
 ```
 
-Expose the grafana web server on a local port using the port-forward-grafana.sh script.
+Expose the grafana web server on a local port.
 
 ```bash
-./port-forward-grafana.sh
+./run.sh grafana
 ```
 
 Now we can view grafana on http://localhost:3000
@@ -214,7 +203,7 @@ fine tune your apps to better handle bursts and ensure high availability.
 ## Removing the cluster
 Remove the cluster with:
 ```bash
-./remove-cluster.sh
+./run.sh remove
 ```
 
 ### Known issues

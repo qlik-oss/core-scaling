@@ -27,10 +27,10 @@ function deploy_enviroment() {
   kubectl create -f ./namespaces.yaml
   kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
   kubectl create -f ./prometheus
-  kubectl create -f ./grafana
   kubectl create -f ./custom-metrics-api
   kubectl create -f ./ingress
   kubectl create -f ./nfs-volumes
+  kubectl create -f ./grafana
 }
 
 function doc_seed() {
@@ -76,6 +76,8 @@ function deploy_all() {
 }
 
 if [ "$command" == "deploy" ]; then deploy_all
+if [ "$command" == "create" ]; then create_cluster
+if [ "$command" == "docs" ]; then doc_seed
 elif [ "$command" == "remove" ]; then remove_cluster
 elif [ "$command" == "ip" ]; then get_external_ip
 elif [ "$command" == "grafana" ]; then port_forward_grafana
