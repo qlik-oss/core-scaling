@@ -109,7 +109,7 @@ kubectl create -f ./nfs-volumes
 Run the seeding script to load the docs in `./doc` catalogue to the cluster.
 
 ```bash
-./run.sh docs
+./run.sh populate-docs
 ```
 
 ## Auto Scaling based on custom metrics
