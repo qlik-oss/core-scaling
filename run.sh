@@ -76,9 +76,9 @@ function deploy_all() {
 }
 
 if [ "$command" == "deploy" ]; then deploy_all
-if [ "$command" == "create" ]; then create_cluster
-if [ "$command" == "docs" ]; then doc_seed
+elif [ "$command" == "create" ]; then create_cluster
+elif [ "$command" == "docs" ]; then doc_seed
 elif [ "$command" == "remove" ]; then remove_cluster
 elif [ "$command" == "ip" ]; then get_external_ip
 elif [ "$command" == "grafana" ]; then port_forward_grafana
-else echo "Invalid option: $command - please use one of: deploy, remove, ip, grafana"; fi
+else echo "Invalid option: $command - please use one of: deploy, create, docs, remove, ip, grafana"; fi
