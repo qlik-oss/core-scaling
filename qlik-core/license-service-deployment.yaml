@@ -13,9 +13,20 @@ spec:
     spec:
       containers:
       - name: license-service
-        image: "qlikcore/licenses:0.0.1"
+        image: "qlikcore/licenses:experimental"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9200
+        env:
+        - name: LICENSES_SERIAL_NBR
+          valueFrom:
+            configMapKeyRef:
+              name: license-data
+              key: LICENSES_SERIAL_NBR
+        - name: LICENSES_CONTROL_NBR
+          valueFrom:
+            configMapKeyRef:
+              name: license-data
+              key: LICENSES_CONTROL_NBR
       imagePullSecrets:
       - name: dockerhub

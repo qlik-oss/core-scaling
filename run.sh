@@ -42,6 +42,7 @@ function doc_seed() {
 
 function deploy_core() {
   kubectl create -f ./rbac-config.yaml
+  kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=$LICENSES_SERIAL_NBR --from-literal LICENSES_CONTROL_NBR=$LICENSES_CONTROL_NBR
   kubectl create -f ./qlik-core
 }
 
