@@ -8,9 +8,9 @@ spec:
     kind: Deployment
     name: engine
   minReplicas: 2
-  maxReplicas: 10
+  maxReplicas: 5
   metrics:
   - type: Pods
     pods:
       metricName: qix_active_sessions
-      targetAverageValue: 10
+      targetAverageValue: 250

@@ -19,7 +19,7 @@ spec:
         image: "qlikcore/qix-session-placement-service:0.0.1-188"
         env:
         - name: SESSIONS_PER_ENGINE_THRESHOLD
-          value: "20"
+          value: "500"
         - name: SESSION_STRATEGY
           value: "weighted"
         imagePullPolicy: IfNotPresent
