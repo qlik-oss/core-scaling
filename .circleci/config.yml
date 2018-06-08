@@ -3,19 +3,21 @@ jobs:
   deploy-job:
     docker:
       - image: google/cloud-sdk
+    working_directory: ~/scaling
     steps:
+      - checkout
       - run:
           name: Store Service Account
           command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
       - run:
-        name: Confige gcloud
-        command: |
-          gcloud --quiet config set project dev-qlik-core
-          gcloud --quiet config set compute/zone europe-west1-b
-          gcloud --quiet container clusters get-credentials cci-test-cluster	
+          name: Confige gcloud
+          command: |
+            gcloud --quiet config set project dev-qlik-core
+            gcloud --quiet config set compute/zone europe-west1-b
+            gcloud --quiet container clusters get-credentials cci-test-cluster	
       - run:
-        name: Install kubectl
-        command: |
-          kubectl version
-          #gcloud components install kubectl
-          #kubectl version
+          name: Install kubectl
+          command: |
+            kubectl version
+            #gcloud components install kubectl
+            #kubectl version
