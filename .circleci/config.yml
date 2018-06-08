@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  deploy-job:
+  build:
     docker:
       - image: google/cloud-sdk
     working_directory: ~/scaling
