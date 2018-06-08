@@ -24,8 +24,8 @@ gcloud container node-pools create monitoring --cluster=$K8S_CLUSTER \
 }
 
 function deploy_enviroment() {
-  kubectl create -f ./namespaces.yaml
-  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
+  #kubectl create -f ./namespaces.yaml
+  #kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
   kubectl create -f ./prometheus
   kubectl create -f ./custom-metrics-api
   kubectl create -f ./ingress
