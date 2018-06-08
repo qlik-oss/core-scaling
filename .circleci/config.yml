@@ -17,8 +17,6 @@ jobs:
             gcloud --quiet config set compute/zone europe-west1-b
             gcloud --quiet container clusters get-credentials cci-test-cluster	
       - run:
-          name: Install kubectl
-          command: |
-            kubectl version
-            #gcloud components install kubectl
-            #kubectl version
+          name: deploy stuff
+          command: gcloud config get-value core/account
+   
