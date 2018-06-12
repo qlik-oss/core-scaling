@@ -17,6 +17,9 @@ jobs:
             gcloud --quiet config set compute/zone europe-west1-b
             gcloud --quiet container clusters get-credentials cci-test-cluster	
       - run:
+          name: Accept EULA
+          command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
+      - run:
           name: deploy qlik-core scaling example
           command: ./run.sh update
    
