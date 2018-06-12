@@ -44,8 +44,8 @@ function doc_seed() {
 }
 
 function deploy_core() {
-  kubectl create -f ./rbac-config.yaml
-  kubectl create -f ./qlik-core
+  kubectl apply -f ./rbac-config.yaml
+  kubectl apply -f ./qlik-core
 }
 
 function port_forward_grafana() {
