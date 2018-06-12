@@ -32,6 +32,10 @@ function deploy_enviroment() {
   kubectl apply -f ./grafana
 }
 
+function create_role_binding() {
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
+}
+
 function doc_seed() {
   POD=$(kubectl get pods --selector="role=nfs-server" -o=jsonpath='{.items[0].metadata.name}')
   # NOTE: Using the // format on file paths is to make it work in Git Bash on Windows which otherwise converts such
@@ -59,6 +63,7 @@ function get_external_ip() {
 
 function deploy_all() {
   create_cluster
+  create_role_binding
   deploy_enviroment
 
   echo "Waiting for deployment to run"

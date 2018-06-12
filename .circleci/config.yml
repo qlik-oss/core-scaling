@@ -17,6 +17,6 @@ jobs:
             gcloud --quiet config set compute/zone europe-west1-b
             gcloud --quiet container clusters get-credentials cci-test-cluster	
       - run:
-          name: deploy stuff
+          name: deploy qlik-core scaling example
           command: ./run.sh update
    
