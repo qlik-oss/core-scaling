@@ -213,4 +213,4 @@ Remove the cluster with:
 
 * If you are running bash for Windows you might get an issue with incorrect paths when querying kubectl for metrics, try using CMD instead. 
 
-* If you are getting issues with the cluster (api server) being unresponsive when you add load to your cluster, this is because the Kubernetes master nodes is being updated to match the size of the autoscaling cluster. To fix this you have to deploy a regional cluster. Reade more here: https://cloudplatform.googleblog.com/2018/06/Regional-clusters-in-Google-Kubernetes-Engine-are-now-generally-available.html
+* If you are getting issues with the cluster (api server) being unresponsive when you add load to your cluster, this is because the Kubernetes master node is being updated to match the size of the autoscaling cluster. To fix this you have to deploy a regional cluster. Reade more here: https://cloudplatform.googleblog.com/2018/06/Regional-clusters-in-Google-Kubernetes-Engine-are-now-generally-available.html
