@@ -80,6 +80,7 @@ function deploy_all() {
 }
 
 function update_cluster() {
+  create_role_binding
   deploy_enviroment
 
   echo "Waiting for deployment to run"
