@@ -14,8 +14,8 @@ jobs:
           command: |
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud --quiet config set project dev-qlik-core
-            gcloud --quiet config set compute/zone europe-west1-b
-            gcloud --quiet container clusters get-credentials cci-test-cluster	
+            gcloud --quiet config set compute/zone europe-west2-a
+            gcloud --quiet container clusters get-credentials cci-test-2	
       - run:
           name: Accept EULA
           command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
