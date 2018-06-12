@@ -20,6 +20,9 @@ jobs:
           name: Accept EULA
           command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
       - run:
-          name: Deploy qlik-core scaling example
-          command: ./run.sh update
+          name: Deploy qlik-core scaling example if on master
+          command: |
+            #if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./run.sh update
+            #fi
    

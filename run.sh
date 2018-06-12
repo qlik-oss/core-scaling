@@ -32,8 +32,8 @@ function deploy_enviroment() {
   kubectl apply -f ./grafana
 }
 
-function apply_role_binding() {
-  kubectl apply clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
+function create_role_binding() {
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
 }
 
 function doc_seed() {
@@ -63,7 +63,7 @@ function get_external_ip() {
 
 function deploy_all() {
   create_cluster
-  apply_role_binding
+  create_role_binding
   deploy_enviroment
 
   echo "Waiting for deployment to run"
@@ -80,7 +80,7 @@ function deploy_all() {
 }
 
 function update_cluster() {
-  apply_role_binding
+  #create_role_binding
   deploy_enviroment
 
   echo "Waiting for deployment to run"
