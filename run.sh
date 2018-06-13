@@ -34,7 +34,7 @@ function deploy_enviroment() {
 
 function create_role_binding() {
   GET_CLUSTER_ROLE_BINDING=$(kubectl get clusterrolebinding cluster-admin-binding)
-  if ![ '$GET_CLUSTER_ROLE_BINDING' = 'Error from server (AlreadyExists): clusterrolebindings.rbac.authorization.k8s.io "cluster-admin-binding" already exists']; then
+  if ! [ '$GET_CLUSTER_ROLE_BINDING' = 'Error from server (AlreadyExists): clusterrolebindings.rbac.authorization.k8s.io "cluster-admin-binding" already exists']; then
     kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
   fi
 }
