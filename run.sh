@@ -33,7 +33,9 @@ function deploy_enviroment() {
 }
 
 function create_role_binding() {
-  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
+  if ! [kubectl get clusterrolebinding cluster-admin-binding]
+    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
+  fi
 }
 
 function doc_seed() {
@@ -80,7 +82,7 @@ function deploy_all() {
 }
 
 function update_cluster() {
-  #create_role_binding
+  create_role_binding
   deploy_enviroment
 
   echo "Waiting for deployment to run"
