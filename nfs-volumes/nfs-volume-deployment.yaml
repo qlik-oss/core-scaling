@@ -32,5 +32,5 @@ spec:
       volumes:
         - name: mypvc
           gcePersistentDisk:
-            pdName: app-nfs-disk-do-not-merge
+            pdName: app-nfs-disk
             fsType: ext4
