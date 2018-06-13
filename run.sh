@@ -33,14 +33,7 @@ function deploy_enviroment() {
 }
 
 function create_role_binding() {
-  (GET_CLUSTER_ROLE_BINDING=$(kubectl get clusterrolebinding cluster-admin-binding) || exit 0) #do not count not finding the binding as an error
-  echo "hello"
-  echo $GET_CLUSTER_ROLE_BINDING
-  echo "goodbye"
-  if [ '$GET_CLUSTER_ROLE_BINDING' = 'Error from server (NotFound): clusterrolebindings.rbac.authorization.k8s.io "cluster-admin-binding" not found' ]; then
-    echo "Creating clusterrolebinding"
-    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
-  fi
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run
 }
 
 function doc_seed() {
