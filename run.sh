@@ -33,7 +33,7 @@ function deploy_enviroment() {
 }
 
 function create_role_binding() {
-  if ! [kubectl get clusterrolebinding cluster-admin-binding] then
+  if ! [kubectl get clusterrolebinding cluster-admin-binding]; then
     kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
   fi
 }
