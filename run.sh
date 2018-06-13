@@ -33,7 +33,8 @@ function deploy_enviroment() {
 }
 
 function create_role_binding() {
-  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run -o=yaml > test.yml
+  kubectl apply -f test.yml
 }
 
 function doc_seed() {
