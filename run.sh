@@ -33,7 +33,7 @@ function deploy_enviroment() {
 }
 
 function create_role_binding() {
-  GET_CLUSTER_ROLE_BINDING=$(kubectl get clusterrolebinding cluster-admin-binding || exit 0 ) #do not count not finding the binding as an error
+  (GET_CLUSTER_ROLE_BINDING=$(kubectl get clusterrolebinding cluster-admin-binding) || exit 0) #do not count not finding the binding as an error
   echo "hello"
   echo $GET_CLUSTER_ROLE_BINDING
   echo "goodbye"
