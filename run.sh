@@ -46,14 +46,10 @@ function doc_seed() {
 }
 
 function deploy_core() {
-<<<<<<< HEAD
-  kubectl create -f ./rbac-config.yaml
-  kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=$LICENSES_SERIAL_NBR --from-literal LICENSES_CONTROL_NBR=$LICENSES_CONTROL_NBR
-  kubectl create -f ./qlik-core
-=======
   kubectl apply -f ./rbac-config.yaml
+  kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=$LICENSES_SERIAL_NBR --from-literal LICENSES_CONTROL_NBR=$LICENSES_CONTROL_NBR --dry-run -o=yaml > create_license-data-configmap.yml
+  kubectl apply -f create_license-data-configmap.yml
   kubectl apply -f ./qlik-core
->>>>>>> master
 }
 
 function port_forward_grafana() {
