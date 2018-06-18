@@ -20,17 +20,22 @@ function create_cluster() {
   --max-nodes $GCLOUD_MAX_NODES &&
 gcloud compute disks create --size=10GB --zone=$GCLOUD_ZONE app-nfs-disk &&
 gcloud container node-pools create monitoring --cluster=$K8S_CLUSTER \
-  --machine-type=$GCLOUD_MACHINE_TYPE --num-nodes=1
+  --machine-type=$GCLOUD_MACHINE_TYPE --num-nodes=1 --zone $GCLOUD_ZONE
 }
 
 function deploy_enviroment() {
-  kubectl create -f ./namespaces.yaml
-  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
-  kubectl create -f ./prometheus
-  kubectl create -f ./custom-metrics-api
-  kubectl create -f ./ingress
-  kubectl create -f ./nfs-volumes
-  kubectl create -f ./grafana
+  kubectl apply -f ./namespaces.yaml
+  kubectl apply -f ./prometheus
+  kubectl apply -f ./custom-metrics-api
+  kubectl apply -f ./ingress
+  kubectl apply -f ./nfs-volumes
+  kubectl apply -f ./grafana
+}
+
+function create_role_binding() {
+  #Create a yaml file so we can use apply
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run -o=yaml > create_role_binding.yml
+  kubectl apply -f create_role_binding.yml
 }
 
 function doc_seed() {
@@ -41,9 +46,14 @@ function doc_seed() {
 }
 
 function deploy_core() {
+<<<<<<< HEAD
   kubectl create -f ./rbac-config.yaml
   kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=$LICENSES_SERIAL_NBR --from-literal LICENSES_CONTROL_NBR=$LICENSES_CONTROL_NBR
   kubectl create -f ./qlik-core
+=======
+  kubectl apply -f ./rbac-config.yaml
+  kubectl apply -f ./qlik-core
+>>>>>>> master
 }
 
 function port_forward_grafana() {
@@ -51,8 +61,8 @@ function port_forward_grafana() {
 }
 
 function remove_cluster() {
-  gcloud container -q clusters delete $K8S_CLUSTER &&
-  gcloud compute -q disks delete app-nfs-disk
+  gcloud container -q clusters delete $K8S_CLUSTER --zone $GCLOUD_ZONE &&
+  gcloud compute -q disks delete app-nfs-disk --zone $GCLOUD_ZONE
 }
 
 function get_external_ip() {
@@ -61,10 +71,11 @@ function get_external_ip() {
 
 function deploy_all() {
   create_cluster
+  create_role_binding
   deploy_enviroment
 
   echo "Waiting for deployment to run"
-  sleep 45
+  sleep 50
 
   doc_seed
   deploy_core
@@ -76,10 +87,22 @@ function deploy_all() {
   port_forward_grafana
 }
 
+function update_cluster() {
+  create_role_binding
+  deploy_enviroment
+
+  echo "Waiting for deployment to run"
+  sleep 50
+
+  doc_seed
+  deploy_core
+}
+
 if [ "$command" == "deploy" ]; then deploy_all
 elif [ "$command" == "create" ]; then create_cluster
+elif [ "$command" == "update" ]; then update_cluster
 elif [ "$command" == "populate-docs" ]; then doc_seed
 elif [ "$command" == "remove" ]; then remove_cluster
 elif [ "$command" == "ip" ]; then get_external_ip
 elif [ "$command" == "grafana" ]; then port_forward_grafana
-else echo "Invalid option: $command - please use one of: deploy, create, docs, remove, ip, grafana"; fi
+else echo "Invalid option: $command - please use one of: deploy, create, update, docs, remove, ip, grafana"; fi

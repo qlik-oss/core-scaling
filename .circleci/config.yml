@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: google/cloud-sdk
+    working_directory: ~/scaling
+    steps:
+      - checkout
+      - run:
+          name: Store Service Account
+          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+      - run:
+          name: Confige gcloud
+          command: |
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project dev-qlik-core
+            gcloud --quiet config set compute/zone europe-west2-a
+            gcloud --quiet container clusters get-credentials core-scaling
+      - run:
+          name: Accept EULA
+          command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
+      - run:
+          name: Deploy qlik-core scaling example if on master
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./run.sh update
+            fi
+   
