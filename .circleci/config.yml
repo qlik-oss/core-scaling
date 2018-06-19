@@ -29,6 +29,7 @@ jobs:
             GCLOUD_PROJECT: "dev-qlik-core"
             DISK_NAME: "test-circleci-disk"
             K8S_CLUSTER: "test-circleci-cluster"
+            GCLOUD_NUM_NODES: 2
           command: ./run.sh deploy
 ### TEST CLUSTER
       - run:
@@ -42,7 +43,7 @@ jobs:
           name: Set Disk Name For Live Cluster
           environment:
             DISK_NAME: "app-nfs-disk"
-          command: grep -rl my-disk ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME/g"
+          command: grep -rl test-circleci-disk ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME/g"
 ##TESTS
       - run:
           name: kubectl context
