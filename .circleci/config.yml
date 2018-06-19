@@ -27,6 +27,7 @@ jobs:
       - run:
           name: Deploy test cluster
           environment:
+            GCLOUD_PROJECT: "dev-qlik-core"
             DISK_NAME: "test-circleci-disk"
             K8S_CLUSTER: "test-circleci-cluster"
           command: ./run.sh deploy
