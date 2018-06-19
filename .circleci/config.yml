@@ -24,17 +24,15 @@ jobs:
       - run:
           name: Deploy test cluster
           environment:
-            DISK_NAME: "test-circleci-disk"
             K8S_CLUSTER: "test-circleci-cluster"
             GCLOUD_NUM_NODES: 2
-          command: ./run.sh deploy
-### Create and run test to validate app is working
+          command: DISK_NAME=$DISK_NAME_TEST ./run.sh deploy
+# Create and run test to validate app is working
       - run:
           name: Remove test cluster
           environment:
-            DISK_NAME: "test-circleci-disk"
             K8S_CLUSTER: "test-circleci-cluster"
-          command: ./run.sh remove
+          command: DISK_NAME=$DISK_NAME_TEST ./run.sh remove
       - run:
           name: Set Disk Name For Live Cluster
           command: grep -rl $DISK_NAME_TEST ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME_PROD/g"
