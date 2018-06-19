@@ -15,14 +15,24 @@ jobs:
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud --quiet config set project dev-qlik-core
             gcloud --quiet config set compute/zone europe-west2-a
-            gcloud --quiet container clusters get-credentials core-scaling
+      #       gcloud --quiet container clusters get-credentials $K8S_CLUSTER
       - run:
           name: Accept EULA
           command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
       - run:
-          name: Deploy qlik-core scaling example if on master
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./run.sh update
-            fi
-   
+          name: Set Disk Name
+          environment:
+            DISK_NAME: "test-circleci-disk"
+          command: grep -rl my-disk ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME/g"
+      - run:
+          name: Deploy test cluster
+          environment:
+            DISK_NAME: "test-circleci-disk"
+            K8S_CLUSTER: "test-circleci-cluster"
+          command: ./run.sh deploy
+      # - run:
+      #     name: Deploy qlik-core scaling example if on master
+      #     command: |
+      #       if [ "${CIRCLE_BRANCH}" == "master" ]; then
+      #         ./run.sh update
+      #       fi
