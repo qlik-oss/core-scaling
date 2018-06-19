@@ -74,11 +74,7 @@ function deploy_all() {
   doc_seed
   deploy_core
 
-  echo "Waiting for Grafana"
-  sleep 20
-
   get_external_ip
-  port_forward_grafana
 }
 
 function update_cluster() {
