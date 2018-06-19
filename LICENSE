@@ -20,13 +20,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-File Copyrights
-===============
-
-All files not explicitly mentioned below
-
-./custom-metrics-api
-    What: Kubernetes Horizontal Pod Autoscaler with Prometheus custom metrics
-    Source URL: https://github.com/stefanprodan/k8s-prom-hpa
-    License: MIT
-    License URL: https://github.com/stefanprodan/k8s-prom-hpa/blob/master/LICENSE
+Files in /custom-metrics-api are based on https://github.com/stefanprodan/k8s-prom-hpa, licensed MIT.
