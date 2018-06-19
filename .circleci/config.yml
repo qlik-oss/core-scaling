@@ -20,22 +20,19 @@ jobs:
           command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
       - run:
           name: Set Disk Name For Test Cluster
-          command: grep -rl my-disk ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME_TEST/g"
+          command: grep -rl my-disk ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME_TEST-$CIRCLE_BUILD_NUM/g"
       - run:
           name: Deploy test cluster
           environment:
-            K8S_CLUSTER: "test-circleci-cluster"
             GCLOUD_NUM_NODES: 2
-          command: DISK_NAME=$DISK_NAME_TEST ./run.sh deploy
+          command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
 # Create and run test to validate app is working
       - run:
           name: Remove test cluster
-          environment:
-            K8S_CLUSTER: "test-circleci-cluster"
-          command: DISK_NAME=$DISK_NAME_TEST ./run.sh remove
+          command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove
       - run:
           name: Set Disk Name For Live Cluster
-          command: grep -rl $DISK_NAME_TEST ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME_PROD/g"
+          command: grep -rl $DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME_PROD/g"
       - run:
           name: Deploy qlik-core scaling example if on master
           command: |
