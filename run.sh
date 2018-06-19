@@ -18,7 +18,7 @@ function create_cluster() {
   --network "default" --enable-cloud-logging --enable-cloud-monitoring \
   --subnetwork "default" --enable-autoscaling --min-nodes $GCLOUD_MIN_NODES \
   --max-nodes $GCLOUD_MAX_NODES &&
-gcloud compute disks create --size=10GB --zone=$GCLOUD_ZONE app-nfs-disk &&
+gcloud compute disks create --size=10GB --zone=$GCLOUD_ZONE $DISK_NAME &&
 gcloud container node-pools create monitoring --cluster=$K8S_CLUSTER \
   --machine-type=$GCLOUD_MACHINE_TYPE --num-nodes=1 --zone $GCLOUD_ZONE
 }
@@ -56,7 +56,7 @@ function port_forward_grafana() {
 
 function remove_cluster() {
   gcloud container -q clusters delete $K8S_CLUSTER --zone $GCLOUD_ZONE &&
-  gcloud compute -q disks delete app-nfs-disk --zone $GCLOUD_ZONE
+  gcloud compute -q disks delete $DISK_NAME --zone $GCLOUD_ZONE
 }
 
 function get_external_ip() {
@@ -74,11 +74,7 @@ function deploy_all() {
   doc_seed
   deploy_core
 
-  echo "Waiting for Grafana"
-  sleep 20
-
   get_external_ip
-  port_forward_grafana
 }
 
 function update_cluster() {
