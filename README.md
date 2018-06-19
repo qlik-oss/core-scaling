@@ -115,7 +115,7 @@ kubectl create -f ./ingress
 
 ### NFS volumes
 
-Deploy the NFS server, which makes available and gives read/write access of the volumes to the engine pods.
+Deploy the NFS server, which gives read/write access of the volumes to the engine pods.
 
 ```bash
 kubectl create -f ./nfs-volumes
@@ -123,7 +123,7 @@ kubectl create -f ./nfs-volumes
 
 ## Add apps to the engine
 
-Run the seeding script to load the documents in the `./doc` catalog into the cluster.
+Run the seeding script to load the documents in the `./doc` folder into the cluster.
 
 ```bash
 ./run.sh populate-docs
