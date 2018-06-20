@@ -4,7 +4,7 @@
 
 * Setup GKE (Google Kubernetes Engine) by following this guide: https://cloud.google.com/kubernetes-engine/docs/quickstart
 
-* Modify the `settings.config` for your needs. Do note that you **have to add your Project name**. Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-PROJECT-HERE}"` add your project name after `:-`
+* Modify the `settings.config` for your needs. Do note that you **have to add your Project name**. Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-PROJECT-HERE}"` add your project name after `:-` you also **have** to add your license serial number and your license control number.
 
 * Accept the EULA, by modifying the file: `./qlik-core/engine-deployment.yaml`
 
@@ -14,15 +14,16 @@
 
 Before reporting an issue have a look in the [Known issues](#known-issues) and see if that can help you. 
 
-
 ## Setup of use case
 
-There are two ways to setup this use case. 
+There are two ways to setup this use case.
+
 * You can deploy everything with the following command, and the go to [Add load to the cluster](#add-load-to-the-cluster)
 
 ```bash
 ./run.sh deploy
 ```
+
 * You can follow along with step by step guide below, with description of every step.
 
 ## Create GKE cluster
@@ -32,6 +33,7 @@ There are two ways to setup this use case.
     wait 30 seconds and try again.
 
 Now create your cluster with the following command: 
+
 ```bash
 ./run.sh create
 ```
@@ -66,6 +68,7 @@ kubectl create -f ./namespaces.yaml
 ```
 
 Increase priveleges to be able to deploy prometheus.
+
 ```bash
 kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
 ```
@@ -117,11 +120,19 @@ Run the seeding script to load the docs in `./doc` catalogue to the cluster.
 Now let's deploy Qlik Core and start to scale based on Qix active sessions.
 
 Start by adding ClusterRole for the Mira service
+
 ```bash
 kubectl create -f ./rbac-config.yaml
 ```
 
-Deploy Qlik Core:
+Then add a configmap with your license data
+
+```bash
+kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=YOUR-LICENSE-SERIAL-NBR --from-literal LICENSES_CONTROL_NBR=YOUR-LICENSE-CONTROL-NBR
+```
+
+Then finally deploy Qlik Core:
+
 ```bash
 kubectl create -f ./qlik-core
 ```
@@ -190,7 +201,6 @@ By default, the metrics sync happens once every **30 seconds** and scaling up/do
 only happen if there was no rescaling within the last **3-5 minutes** with different timers for scaling the pods and the nodes. 
 In this way, the HPA prevents rapid execution of conflicting decisions.
 
-
 ## Conclusions
 
 Not all systems can meet their SLAs by relying on CPU/memory usage metrics alone, most web and mobile 
@@ -199,14 +209,16 @@ For ETL apps, auto scaling could be triggered by the job queue length exceeding 
 By instrumenting your applications with Prometheus and exposing the right metrics for autoscaling you can 
 fine tune your apps to better handle bursts and ensure high availability.
 
-
 ## Removing the cluster
+
 Remove the cluster with:
+
 ```bash
 ./run.sh remove
 ```
 
 ### Known issues
+
 * If you are getting issues with the nginx deployment, you might have used all your public IP's. Make some public IP's available by clearing up here: https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list
 
 * If you are getting issues when deploying Prometheus it could be an username issue. Your username is case sensitive. If you get an error message, this should contain your actual username. Use this username and run this command before redeploying Prometheus. `kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=<YOUR-USER-NAME>`
