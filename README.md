@@ -139,14 +139,20 @@ Now that the GKE cluster is set up and the documents are loaded into the cluster
     kubectl create -f ./rbac-config.yaml
     ```
 
+1. Add a configmap with your license data
+
+    ```bash
+    kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=YOUR-LICENSE-SERIAL-NBR --from-literal LICENSES_CONTROL_NBR=YOUR-LICENSE-CONTROL-NBR
+    ```
+
 1. Deploy Qlik Core:
 
     ```bash
     kubectl create -f ./qlik-core
     ```
 
-The `engine` service exposes a custom metric named `qix_active_sessions`.
-The Prometheus adapter removes the `_total` suffix and marks the metric as a counter metric.
+    The `engine` service exposes a custom metric named `qix_active_sessions`.
+    The Prometheus adapter removes the `_total` suffix and marks the metric as a counter metric.
 
 1. Get the total Qlik Associative Engine active sessions from the custom metrics API:
 
