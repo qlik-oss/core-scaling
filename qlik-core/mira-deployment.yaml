@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: mira
-        image: "qlikcore/mira:0.3.0"
+        image: "qlikcore/mira:0.3.1"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9100
