@@ -29,12 +29,11 @@ spec:
       terminationGracePeriodSeconds: 600
       containers:
       - name: engine
-        image: "qlikcore/engine:12.190.0"
+        image: "qlikcore/engine:12.193.0"
         args: [
           "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
           "-S", "LicenseServiceUrl=http://license-service:9200",
-          "-S", "DocumentDirectory=/doc",
-          "-S", "DisableStartupLicenseCheck=1"
+          "-S", "DocumentDirectory=/doc"
         ]
         imagePullPolicy: IfNotPresent
         ports:
