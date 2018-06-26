@@ -30,7 +30,7 @@ jobs:
           name: Run sanity test towards the test cluster
           working_directory: ~/scaling/deployment-test
           command: |
-            apt-get update
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             apt-get -y install nodejs
             apt-get -y install npm
             #apk add --update nodejs npm
