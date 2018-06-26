@@ -27,7 +27,7 @@ jobs:
       #       GCLOUD_NUM_NODES: 2
       #     command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
       - run:
-          name: Run sanity test towards the test cluster
+          name: Run sanity tests towards the test cluster
           working_directory: ~/scaling/deployment-test
           command: |
             curl -sL https://deb.nodesource.com/setup_8.x | bash -
