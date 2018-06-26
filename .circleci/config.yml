@@ -34,7 +34,7 @@ jobs:
             apt-get -y install nodejs
             npm install
             apt-get -y install jq
-            export TEST_CLUSTER_IP="$(kubectl get service ingress-nginx --namespace ingress-nginx -o json | jq '.status.loadBalancer.ingress[0].ip' | tr -d '"')"
+            export TEST_CLUSTER_IP="$(kubectl get service ingress-nginx --namespace ingress-nginx -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
             npm run test
       - run:
           name: Remove test cluster
