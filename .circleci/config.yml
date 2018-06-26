@@ -32,10 +32,9 @@ jobs:
           command: |
             curl -sL https://deb.nodesource.com/setup_8.x | bash -
             apt-get -y install nodejs
-            #apt-get -y install npm
-            #apk add --update nodejs npm
             npm install
-            TEST_CLUSTER_IP=35.189.84.176 npm run test
+            export TEST_CLUSTER_IP=35.189.84.176 
+            npm run test
       - run:
           name: Remove test cluster
           command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove
