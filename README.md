@@ -9,9 +9,10 @@ This use case shows how you can set up a Qlik Core application in a Google Kuber
 * Modify the `settings.config` for your project.
 
     !!! Note
-        You must include your license serial number and license control number in the `settings.config` file. Add your project name after `:-`.
+        You must include your license serial number, license control number and Google Cloud project name in the `settings.config` file.
+        You should add the license serial number, license control number and Google Cloud project name after the ":-" on the respective rows.
 
-        Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-PROJECT-HERE}"`
+        Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-GLCOUD-PROJECT-NAME-HERE}"`
 
 * Accept the EULA by modifying the `./qlik-core/engine-deployment.yaml` file.
 
