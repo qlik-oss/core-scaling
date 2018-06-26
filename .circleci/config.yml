@@ -31,6 +31,7 @@ jobs:
           working_directory: ~/scaling/deployment-test
           command: |
             apt-get -y install nodejs
+            apt-get -y install npm
             npm install
             TEST_CLUSTER_IP=35.189.84.176 npm run test
       - run:
