@@ -30,8 +30,9 @@ jobs:
           name: Run sanity test towards the test cluster
           working_directory: ~/scaling/deployment-test
           command: |
-            apt-get -y install nodejs
-            apt-get -y install npm
+            #apt-get -y install nodejs
+            #apt-get -y install npm
+            apk add --update nodejs npm
             npm install
             TEST_CLUSTER_IP=35.189.84.176 npm run test
       - run:
