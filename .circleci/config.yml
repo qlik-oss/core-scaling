@@ -33,7 +33,7 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_8.x | bash -
             apt-get -y install nodejs
             npm install
-            export TEST_CLUSTER_IP=35.189.84.176 
+            export TEST_CLUSTER_IP="$(kubectl get service ingress-nginx --namespace ingress-nginx -o json | jq '.status.loadBalancer.ingress[0].ip' | tr -d '"')"
             npm run test
       - run:
           name: Remove test cluster
