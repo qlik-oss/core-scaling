@@ -1,99 +1,114 @@
-# Autoscaling Kubernetes on GKE
+# Autoscaling Qlik Core on Google Kubernetes Engine
+
+This use case shows how you can set up a Qlik Core application in a Google Kubernetes Engine (GKE) cluster so you can easily scale your application up or down to meet user demands.
 
 ## Prerequisites
 
-* Setup GKE (Google Kubernetes Engine) by following this guide: https://cloud.google.com/kubernetes-engine/docs/quickstart
+* Set up GKE by following the GKE [Quickstart guide](https://cloud.google.com/kubernetes-engine/docs/quickstart).
 
-* Modify the `settings.config` for your needs. Do note that you **have to add your Project name**. Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-PROJECT-HERE}"` add your project name after `:-` you also **have** to add your license serial number and your license control number.
+* Modify the `settings.config` for your project.
 
-* Accept the EULA, by modifying the file: `./qlik-core/engine-deployment.yaml`
+    !!! Note
+        You must include your license serial number, license control number and Google Cloud project name in the `settings.config` file.
+        You should add the license serial number, license control number and Google Cloud project name after the ":-" on the respective rows.
 
-* [jq](https://stedolan.github.io/jq/) to make the printout more readable.
+        Example: `GCLOUD_PROJECT="${GCLOUD_PROJECT:-YOUR-GLCOUD-PROJECT-NAME-HERE}"`
+
+* Accept the EULA by modifying the `./qlik-core/engine-deployment.yaml` file.
+
+* Install [jq](https://stedolan.github.io/jq/) JSON processor to make the printout more readable.
 
 ## Issues
 
-Before reporting an issue have a look in the [Known issues](#known-issues) and see if that can help you. 
+Before reporting a new issue, look for your issue in [Known issues](#known-issues).
 
-## Setup of use case
+## Getting started
 
-There are two ways to setup this use case.
+There are two ways get started:
 
-* You can deploy everything with the following command, and the go to [Add load to the cluster](#add-load-to-the-cluster)
+* By following the step-by-step guide below.
 
-```bash
-./run.sh deploy
-```
+    If you are unfamiliar with GKE, we recommend that you follow the step-by-step guide.
 
-* You can follow along with step by step guide below, with description of every step.
+* By deploying everything with the following command:
 
-## Create GKE cluster
+    ```bash
+    ./run.sh deploy
+    ```
 
-!!! Note "Deployment delays"
-    When deploying there is a time delay before the services are up and running. If a command fails, please
+    If you choose this option, you can skip to [Add load to the cluster](#add-load-to-the-cluster).
+
+## Create a GKE cluster
+
+!!! Note
+    There is often a deployment delay before the services are running. If a command fails,
     wait 30 seconds and try again.
 
-Now create your cluster with the following command: 
+Create the GKE cluster with the following command:
 
 ```bash
 ./run.sh create
 ```
 
-This command will take some time, since now the GKE cluster and compute volume is being created.
+This command runs the script that creates the GKE cluster and volumes, and it will take some time to complete.
 
-After the script finished you should be able to query the Kubernetes cluster. To see some metric execute the following commands: 
+After the script is finished running, you should be able to query the Kubernetes cluster. Run the following commands to see the node and pods metrics:
 
-Node metrics:
+* Node metrics:
 
-```bash
-kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes" | jq .
-```
+    ```bash
+    kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes" | jq .
+    ```
 
-Pods metrics:
+* Pods metrics:
 
-```bash
-kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods" | jq .
-```
+    ```bash
+    kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods" | jq .
+    ```
 
-### Setting up Custom Metrics Server
+### Set up a custom metrics server
 
-Now we can scale on the built-in metrics which is CPU and Memory, but in order to scale based on custom metrics you need to have two components. 
-One component that collects metrics from your applications and stores them the [Prometheus](https://prometheus.io) in a time series database.
+You can scale up or down based on built-in metrics: CPU and memory. However, to scale up or down based on custom metrics, you need to add two components.
 
-And a second component that extends the Kubernetes custom metrics API with the metrics supplied by the collected metrics in Prometheus, the [k8s-prometheus-adapter](https://github.com/DirectXMan12/k8s-prometheus-adapter).
+You need one component to collect metrics from your applications and store them to [Prometheus](https://prometheus.io) in a time series database.
 
-First, we need to create the namespaces for metrics and Ingress:
+The second component extends the Kubernetes custom metrics API with the [k8s-prometheus-adapter](https://github.com/DirectXMan12/k8s-prometheus-adapter). The adapter talks to Prometheus to expose custom metrics and makes them available to the Kubernetes custom metrics API.
 
-```bash
-kubectl create -f ./namespaces.yaml
-```
+Do the following:
 
-Increase priveleges to be able to deploy prometheus.
+1. Create the namespaces for metrics and Ingress:
 
-```bash
-kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
-```
+    ```bash
+    kubectl create -f ./namespaces.yaml
+    ```
 
-Deploy Prometheus:
+1. Increase the privileges to deploy Prometheus:
 
-```bash
-kubectl create -f ./prometheus
-```
+    ```bash
+    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
+    ```
 
-Deploy the Prometheus custom metrics API adapter:
+1. Deploy Prometheus:
 
-```bash
-kubectl create -f ./custom-metrics-api
-```
+    ```bash
+    kubectl create -f ./prometheus
+    ```
 
-After the pods is in a ready state we should now be able to list the custom metrics provided by Prometheus:
+1. Deploy the Prometheus custom metrics API adapter:
 
-```bash
-kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1" | jq .
-```
+    ```bash
+    kubectl create -f ./custom-metrics-api
+    ```
+
+1. Once the pod is in a ready state, you can list the custom metrics provided by Prometheus:
+
+    ```bash
+    kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1" | jq .
+    ```
 
 ### Ingress routing
 
-Deploy the ingress controller allowing us to reach the qix-session services and create sessions against engines in our cluster.
+Deploy the Ingress controller, which lets you reach the qix-session services and creates sessions against engines in our cluster.
 
 ```bash
 kubectl create -f ./ingress
@@ -101,7 +116,7 @@ kubectl create -f ./ingress
 
 ### NFS volumes
 
-Deploy the NFS server enabling us to have read/write volumes reachable by the engine pods.
+Deploy the NFS server, which gives read/write access of the volumes to the engine pods.
 
 ```bash
 kubectl create -f ./nfs-volumes
@@ -109,105 +124,107 @@ kubectl create -f ./nfs-volumes
 
 ## Add apps to the engine
 
-Run the seeding script to load the docs in `./doc` catalogue to the cluster.
+Run the seeding script to load the documents in the `./doc` folder into the cluster.
 
 ```bash
 ./run.sh populate-docs
 ```
 
-## Auto Scaling based on custom metrics
+## Autoscaling based on custom metrics
 
-Now let's deploy Qlik Core and start to scale based on Qix active sessions.
+Now that the GKE cluster is set up and the documents are loaded into the cluster, you can deploy Qlik Core and start to scale based on Qlik Associative Engine active sessions.
 
-Start by adding ClusterRole for the Mira service
+1. Add a ClusterRole for the Mira service.
 
-```bash
-kubectl create -f ./rbac-config.yaml
-```
+    ```bash
+    kubectl create -f ./rbac-config.yaml
+    ```
 
-Then add a configmap with your license data
+1. Add a configmap with your license data
 
-```bash
-kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=YOUR-LICENSE-SERIAL-NBR --from-literal LICENSES_CONTROL_NBR=YOUR-LICENSE-CONTROL-NBR
-```
+    ```bash
+    kubectl create configmap license-data --from-literal LICENSES_SERIAL_NBR=YOUR-LICENSE-SERIAL-NBR --from-literal LICENSES_CONTROL_NBR=YOUR-LICENSE-CONTROL-NBR
+    ```
 
-Then finally deploy Qlik Core:
+1. Deploy Qlik Core:
 
-```bash
-kubectl create -f ./qlik-core
-```
+    ```bash
+    kubectl create -f ./qlik-core
+    ```
 
-The `engine` service exposes a custom metric named `qix_active_sessions`. 
-The Prometheus adapter removes the `_total` suffix and marks the metric as a counter metric.
+    The `engine` service exposes a custom metric named `qix_active_sessions`.
+    The Prometheus adapter removes the `_total` suffix and marks the metric as a counter metric.
 
-Get the total qix_active_sessions from the custom metrics API:
+1. Get the total Qlik Associative Engine active sessions from the custom metrics API:
 
-```bash
-kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/qix_active_sessions" | jq .
-```
+    ```bash
+    kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/qix_active_sessions" | jq .
+    ```
 
-Check that the HPA (Horizontal Pod Autoscaler), which is responsible for the scaling, is active and check that you have 0 sessions on your engines.
+1. Check that the Horizontal Pod Autoscaler (HPA), which is responsible for scaling, is active, and check that you have 0 sessions on your engines.
 
-```bash
-kubectl get hpa
-```
+    ```bash
+    kubectl get hpa
+    ```
 
 ## Monitor the cluster
-Before we start adding load to the cluster let's deploy Grafana so we can see how the cluster is reacting
 
-```bash
-kubectl create -f ./grafana
-```
+Before you add any load to the cluster, deploy Grafana for monitoring.
 
-Expose the grafana web server on a local port.
+1. Deploy Grafana.
 
-```bash
-./run.sh grafana
-```
+    ```bash
+    kubectl create -f ./grafana
+    ```
 
-Now we can view grafana on http://localhost:3000
+1. Expose the Grafana web server on a local port.
+
+    ```bash
+    ./run.sh grafana
+    ```
+
+You can view Grafana on http://localhost:3000.
 
 ## Add load to the cluster
 
-Now we can apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-oss/core-qix-session-workout)
+Now that Grafana is set up, apply some load on the `engine` service with [core-qix-session-workout](https://github.com/qlik-oss/core-qix-session-workout).
 
-First, we need to clone the repository and change folder to the repository directory.
+First, clone the repository and go to the repository directory.
 
-then we need to get the external ip-address from the nginx-controller which acts as the entrypoint to the cluster.
+Next, you need to get the external IP address from the nginx-controller which acts as the entry point to the cluster.
 
-```
-kubectl get service ingress-nginx --namespace ingress-nginx
-```
+1. Get the IP addresses from the nginx-controller.
 
-Copy the external-ip and change the `gateway` field in the `configs/scaling.json` file to your ingress-nginx controllers external ip.
+    ```
+    kubectl get service ingress-nginx --namespace ingress-nginx
+    ```
 
-Then we can start putting some load on our engines.
+1. Copy the external IP address and change the `gateway` field in the `configs/scaling.json` file to your ingress-nginx controllers external IP address.
 
-```bash
-node cli.js -c ./configs/scaling.json
-```
+    ```bash
+    node cli.js -c ./configs/scaling.json
+    ```
 
-This will create 50 sessions, one new session every 10 seconds with no selections being made. You can change the settings in the `configs/scaling.json` file if you want to scale up to more sessions or change the speed that new sessions are added with.
+Now you can start putting some load on the engines.
 
-The HPA is configured to start scaling new engine pods when the average selection on the engines are more than 10 sessions. The session-service is configured to place a max of 20 sessions on one engine. The engine deployment itself is configured to only accept being on a node that doesn't have another engine running on it already.
+### Results
 
-Depending on how many nodes you already have it might put the new pod(s) on a node that already exists (that does not have an engine) or it might need to spin up one or several new nodes to be able to deploy the engine pod.
+This will create 50 sessions, one new session every 10 seconds with no selections being made. You can change the settings in the `configs/scaling.json` file if you want to scale up to more sessions or change the speed at which new sessions are added.
 
-When all 50 sessions have been loaded on the engines you can stop the `core-qix-session-workout` by pressing `ctrl + c` in the terminal it is running.
-HPA will then scale down the deployment to its initial number of replicas and nodes.
+The HPA is configured to start scaling new engine pods when the average selection on the engines exceeds 10 sessions. The session service is configured to place a maximum of 20 sessions on one engine. The engine deployment itself is configured to run one engine per node.
 
-You may have noticed that the autoscaler doesn't react immediately to usage spikes. 
-By default, the metrics sync happens once every **30 seconds** and scaling up/down can 
-only happen if there was no rescaling within the last **3-5 minutes** with different timers for scaling the pods and the nodes. 
-In this way, the HPA prevents rapid execution of conflicting decisions.
+Depending on how many nodes you already have, the HPA might put a new pod on a node that already exists (that is not running an engine instance) or it might need to spin up one or several new nodes to be able to deploy the engine pod.
+
+When all 50 sessions have been loaded on the engines, you can stop the `core-qix-session-workout` by pressing `ctrl + c` in the terminal it is running in. HPA will then scale down the deployment to its initial number of replicas and nodes.
+
+You may have noticed that the autoscaler doesn't react immediately to usage spikes. This is because the metrics sync happens by default once every **30 seconds**. Scaling up/down can
+only happen if there was no rescaling within the last **3-5 minutes** with different timers for scaling the pods and the nodes. As a result, the HPA prevents rapid execution of conflicting decisions.
 
 ## Conclusions
 
-Not all systems can meet their SLAs by relying on CPU/memory usage metrics alone, most web and mobile 
-backends require autoscaling based on requests per second to handle any traffic bursts. 
-For ETL apps, auto scaling could be triggered by the job queue length exceeding some threshold and so on. 
-By instrumenting your applications with Prometheus and exposing the right metrics for autoscaling you can 
-fine tune your apps to better handle bursts and ensure high availability.
+Not all systems can meet their SLAs by relying on CPU/memory usage metrics alone. Most web and mobile back-end systems require autoscaling based on requests-per-second to handle any traffic bursts.
+
+For ETL apps, autoscaling can be triggered by the job queue length exceeding some threshold and so on. By instrumenting your applications with Prometheus and exposing the right metrics for autoscaling, you can fine-tune your applications to better handle traffic bursts and ensure high availability.
 
 ## Removing the cluster
 
@@ -219,10 +236,14 @@ Remove the cluster with:
 
 ### Known issues
 
-* If you are getting issues with the nginx deployment, you might have used all your public IP's. Make some public IP's available by clearing up here: https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list
+* If you are having problems with the nginx deployment, you might have used all your public IPs. You can clear some IPs to make them available here: https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list
 
-* If you are getting issues when deploying Prometheus it could be an username issue. Your username is case sensitive. If you get an error message, this should contain your actual username. Use this username and run this command before redeploying Prometheus. `kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=<YOUR-USER-NAME>`
+* If you are having problems when deploying Prometheus, it could be a problem with your username. When you get an error message, it should contain your actual username (case sensitive). Use this username and run this command before redeploying Prometheus.
 
-* If you are running bash for Windows you might get an issue with incorrect paths when querying kubectl for metrics, try using CMD instead. 
+    ```bash
+    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=<YOUR-USER-NAME>
+    ```
 
-* If you are getting issues with the cluster (api server) being unresponsive when you add load to your cluster, this is because the Kubernetes master node is being updated to match the size of the autoscaling cluster. To fix this you have to deploy a regional cluster. Reade more here: https://cloudplatform.googleblog.com/2018/06/Regional-clusters-in-Google-Kubernetes-Engine-are-now-generally-available.html
+* If you are running bash for Windows, you might have an issue with incorrect paths when querying kubectl for metrics. Use CMD instead of bash for Windows.
+
+* If the cluster (API server) is unresponsive when you add load to your cluster, this is because the Kubernetes master node is being updated to match the size of the autoscaling cluster. To fix this, you have to deploy a regional cluster. Reade more here: https://cloudplatform.googleblog.com/2018/06/Regional-clusters-in-Google-Kubernetes-Engine-are-now-generally-available.html
