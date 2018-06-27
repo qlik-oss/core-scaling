@@ -10,7 +10,7 @@ jobs:
           name: Store Service Account
           command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
       - run:
-          name: Confige gcloud
+          name: Configure gcloud
           command: |
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud --quiet config set project dev-qlik-core
@@ -26,7 +26,16 @@ jobs:
           environment:
             GCLOUD_NUM_NODES: 2
           command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
-# Create and run test to validate app is working
+      - run:
+          name: Install prerequisites and run sanity tests towards the test cluster
+          working_directory: ~/scaling/deployment-test
+          command: |
+            curl -sL https://deb.nodesource.com/setup_8.x | bash -
+            apt-get -y install nodejs
+            npm install
+            apt-get -y install jq
+            export TEST_CLUSTER_IP="$(kubectl get service ingress-nginx --namespace ingress-nginx -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
+            npm run test
       - run:
           name: Remove test cluster
           command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove

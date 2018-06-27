@@ -1,0 +1,13 @@
+{
+  "name": "deployment-test",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "aw node --glob ./verify-deployment.spec.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "enigma.js": "2.2.1",
+    "ws": "5.2.1",
+    "after-work.js": "4.3.2"
+  }
+}
