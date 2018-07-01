@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: license-service
-        image: "qlikcore/licenses:1.0.1"
+        image: "qlikcore/licenses:1.0.2"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9200
