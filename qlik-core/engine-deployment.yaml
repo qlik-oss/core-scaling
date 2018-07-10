@@ -33,7 +33,9 @@ spec:
         args: [
           "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
           "-S", "LicenseServiceUrl=http://license-service:9200",
-          "-S", "DocumentDirectory=/doc"
+          "-S", "DocumentDirectory=/doc",
+          "-S", "EnableABAC=1",
+          "-S", "SystemAllowRulePath=/rules/read_engine_rules.txt"
         ]
         imagePullPolicy: IfNotPresent
         ports:
@@ -44,6 +46,8 @@ spec:
             name: app-nfs
           - name: engine-prestop-hook
             mountPath: /engine-prestop-hook
+          - mountPath: /rules
+            name: access-control
         lifecycle:
           preStop:
             exec:
@@ -56,9 +60,12 @@ spec:
         - name: app-nfs
           persistentVolumeClaim:
             claimName: nfs
+        - name: access-control
+          configMap:
+            name: access-control
       initContainers:
         - name: volume-mount-owner
-          image: alpine
+          image: "alpine:3.5"
           # Ensure the owner is nobody:nogroup
           command: ["sh", "-c", "chown -R 65534:65534 /doc"]
           volumeMounts:
