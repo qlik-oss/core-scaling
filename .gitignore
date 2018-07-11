@@ -13,3 +13,7 @@ metrics-ca-config.json
 metrics-ca.crt
 metrics-ca.key
 cm-adapter-serving-certs.yaml
+create_license-data-configmap.yml
+create_role_binding.yml
+node_modules/
+.vscode/
