@@ -20,7 +20,7 @@ function create_cluster() {
   --max-nodes $GCLOUD_MAX_NODES &&
 gcloud compute disks create --size=10GB --zone=$GCLOUD_ZONE $DISK_NAME &&
 gcloud container node-pools create monitoring --cluster=$K8S_CLUSTER \
-  --machine-type=$GCLOUD_MACHINE_TYPE --num-nodes=1 --zone $GCLOUD_ZONE
+  --machine-type=$GCLOUD_MACHINE_TYPE --scopes $GCLOUD_SCOPES --num-nodes=1 --zone $GCLOUD_ZONE
 }
 
 function deploy_enviroment() {
