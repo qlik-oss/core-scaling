@@ -48,5 +48,6 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               gcloud --quiet container clusters get-credentials core-scaling
+              chown -R 65534:65534 doc
               ./run.sh update
             fi
