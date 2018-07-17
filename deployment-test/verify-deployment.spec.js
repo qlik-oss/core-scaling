@@ -29,7 +29,7 @@ describe('Verify the Deployment', () => {
   it('Verify that the app includes at least one of the correct fields', async () => {
     const app = await qix.getActiveDoc();
     const landField = await app.getFieldDescription('Land Area');
-    expect(landField.qName).to.equal('Land Area1');
+    expect(landField.qName).to.equal('Land Area');
   });
 
   it('Verify that reload is not possible', async () => {
