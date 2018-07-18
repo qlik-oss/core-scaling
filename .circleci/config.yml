@@ -52,7 +52,7 @@ jobs:
               ./run.sh update
             fi
       - run:
-          name: Run the sanity tests toward the real deployed cluster
+          name: Run the sanity tests toward the prod cluster (https://urbanization.qlikcore.com)
           working_directory: ~/scaling/deployment-test
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
