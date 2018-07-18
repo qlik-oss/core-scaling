@@ -51,3 +51,11 @@ jobs:
               chown -R 65534:65534 doc
               ./run.sh update
             fi
+      - run:
+          name: Run the sanity tests toward the real deployed cluster
+          working_directory: ~/scaling/deployment-test
+          command: |
+            for deployment in `kubectl get deployment -o name`; do echo `kubectl rollout status $deployment`; done
+            export TEST_CLUSTER_IP="$(kubectl get service ingress-nginx --namespace ingress-nginx -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
+            #note TEST_CLUSTER_IP will here get the IP of the live deployed cluster.
+            npm run test
