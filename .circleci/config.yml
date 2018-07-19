@@ -25,7 +25,10 @@ jobs:
           name: Deploy test cluster
           environment:
             GCLOUD_NUM_NODES: 2
-          command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
+          command: |
+            K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
+            # Wait for all deployments to rollout
+            for deployment in `kubectl get deployment -o name`; do echo `kubectl rollout status $deployment`; done
       - run:
           name: Install prerequisites and run sanity tests towards the test cluster
           working_directory: ~/scaling/deployment-test
