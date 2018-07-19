@@ -202,7 +202,7 @@ Next, you need to get the external IP address from the nginx-controller which ac
 1. Copy the external IP address and change the `gateway` field in the `configs/scaling.json` file to your ingress-nginx controllers external IP address.
 
     ```bash
-    node cli.js -c ./configs/scaling.json
+    node main.js -c ./configs/scaling.json
     ```
 
 Now you can start putting some load on the engines.
