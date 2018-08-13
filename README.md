@@ -16,9 +16,9 @@ This use case shows how you can set up a Qlik Core application in a Google Kuber
 
 * Accept the EULA by modifying the `./qlik-core/engine-deployment.yaml` file.
 
-* Change the max number of sessions on an engine to 20 from 500 by changing `SESSIONS_PER_ENGINE_THRESHOLD` in the `./qlik-core/qix-session-service.yaml` file.
+* Change the max number of sessions on an engine from 500 to 20 by changing `SESSIONS_PER_ENGINE_THRESHOLD` in the `./qlik-core/qix-session-service.yaml` file.
 
-* Change when the HPA will start scaling engines by changing `qix_active_sessions` to 10 from 250 in the `./qlik-core/engine-hpa-custom.yaml` file.
+* Change when the HPA will start scaling engines by changing `qix_active_sessions` from 250 to 10 in the `./qlik-core/engine-hpa-custom.yaml` file.
 
 * Install [jq](https://stedolan.github.io/jq/) JSON processor to make the printout more readable.
 
@@ -86,25 +86,25 @@ Do the following:
     kubectl create -f ./namespaces.yaml
     ```
 
-2. Increase the privileges to deploy Prometheus:
+1. Increase the privileges to deploy Prometheus:
 
     ```bash
     kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account)
     ```
 
-3. Deploy Prometheus:
+1. Deploy Prometheus:
 
     ```bash
     kubectl create -f ./prometheus
     ```
 
-4. Deploy the Prometheus custom metrics API adapter:
+1. Deploy the Prometheus custom metrics API adapter:
 
     ```bash
     kubectl create -f ./custom-metrics-api
     ```
 
-5. Once the pod is in a ready state, you can list the custom metrics provided by Prometheus:
+1. Once the pod is in a ready state, you can list the custom metrics provided by Prometheus:
 
     ```bash
     kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1" | jq .
