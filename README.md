@@ -16,6 +16,10 @@ This use case shows how you can set up a Qlik Core application in a Google Kuber
 
 * Accept the EULA by modifying the `./qlik-core/engine-deployment.yaml` file.
 
+* Change the max number of sessions on an engine from 500 to 20 by changing `SESSIONS_PER_ENGINE_THRESHOLD` in the `./qlik-core/qix-session-service.yaml` file.
+
+* Change when the HPA will start scaling engines by changing `qix_active_sessions` from 250 to 10 in the `./qlik-core/engine-hpa-custom.yaml` file.
+
 * Install [jq](https://stedolan.github.io/jq/) JSON processor to make the printout more readable.
 
 ## Issues
