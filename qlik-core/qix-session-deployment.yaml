@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: qix-session
-        image: "qlikcore/qix-session-placement-service:0.0.1-188"
+        image: "qlikcore/qix-session-placement-service:0.0.1-288"
         env:
         - name: SESSIONS_PER_ENGINE_THRESHOLD
           value: "500"

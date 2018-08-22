@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: mira
-        image: "qlikcore/mira:0.3.1"
+        image: "qlikcore/mira:0.4.0"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9100
@@ -23,7 +23,7 @@ spec:
         - name: MIRA_ENGINE_UPDATE_INTERVAL
           value: "5000"
       - name: kubectl
-        image: gcr.io/google_containers/kubectl:v0.18.0-350-gfb3305edcf6c1a
+        image: "lachlanevenson/k8s-kubectl:v1.9.10"
         args: [ "proxy", "-p", "8001" ]
         imagePullPolicy: IfNotPresent
       imagePullSecrets:
