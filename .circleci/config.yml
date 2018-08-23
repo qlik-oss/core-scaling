@@ -51,8 +51,9 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               gcloud --quiet container clusters get-credentials core-scaling
-              chown -R 65534:65534 doc
               ./run.sh update
+              POD=$(kubectl get pods --selector="role=nfs-server" -o=jsonpath='{.items[0].metadata.name}')
+              kubectl exec $POD -- chown -R 65534:65534 /exports/default
             fi
       - run:
           name: Run the sanity tests toward the prod cluster (https://urbanization.qlikcore.com)
