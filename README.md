@@ -206,14 +206,14 @@ Next, you need to get the external IP address from the nginx-controller which ac
 1. Copy the external IP address and change the `gateway` field in the `configs/scaling.json` file to your ingress-nginx controllers external IP address.
 
     ```bash
-    node main.js -c ./configs/scaling.json
+    node main.js -c configs/scaling.json -s scenarios/random-selection-scenario.js
     ```
 
 Now you can start putting some load on the engines.
 
 ### Results
 
-This will create 50 sessions, one new session every 10 seconds with no selections being made. You can change the settings in the `configs/scaling.json` file if you want to scale up to more sessions or change the speed at which new sessions are added.
+This will create 50 sessions, one new session every 10 seconds with random selections being made. You can change the settings in the `configs/scaling.json` file if you want to scale up to more sessions or change the speed at which new sessions are added.
 
 The HPA is configured to start scaling new engine pods when the average selection on the engines exceeds 10 sessions. The session service is configured to place a maximum of 20 sessions on one engine. The engine deployment itself is configured to run one engine per node.
 
