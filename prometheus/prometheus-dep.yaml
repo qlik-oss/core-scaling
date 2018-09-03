@@ -22,6 +22,11 @@ spec:
       containers:
       - name: prometheus
         image: prom/prometheus:v2.1.0
+        resources:
+            requests:
+              memory: "2500Mi"
+            limits:
+              memory: "2500Mi"
         imagePullPolicy: Always
         command:
           - prometheus

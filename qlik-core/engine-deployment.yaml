@@ -30,6 +30,11 @@ spec:
       containers:
       - name: engine
         image: "qlikcore/engine:12.215.0"
+        resources:
+            requests:
+              memory: "2200Mi"
+            limits:
+              memory: "2200Mi"
         args: [
           "-S", "AcceptEULA=no", # change to 'yes' if you accept the Qlik Core EULA
           "-S", "LicenseServiceUrl=http://license-service:9200",

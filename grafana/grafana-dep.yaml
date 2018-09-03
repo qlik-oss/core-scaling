@@ -16,6 +16,11 @@ spec:
       containers:
         - name: grafana
           image: grafana/grafana:5.0.4
+          resources:
+              requests:
+                memory: "50Mi"
+              limits:
+                memory: "50Mi"
           env:
             - name: GF_AUTH_ANONYMOUS_ENABLED
               value: "true"
