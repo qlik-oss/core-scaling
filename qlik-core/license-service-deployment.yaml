@@ -14,6 +14,11 @@ spec:
       containers:
       - name: license-service
         image: "qlikcore/licenses:1.0.5"
+        resources:
+            requests:
+              memory: "16Mi"
+            limits:
+              memory: "16Mi"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9200

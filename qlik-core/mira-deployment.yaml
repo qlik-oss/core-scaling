@@ -13,6 +13,11 @@ spec:
     spec:
       containers:
       - name: mira
+        resources:
+            requests:
+              memory: "200Mi"
+            limits:
+              memory: "200Mi"
         image: "qlikcore/mira:0.4.0"
         imagePullPolicy: IfNotPresent
         ports:

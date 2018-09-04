@@ -19,6 +19,11 @@ spec:
       serviceAccountName: custom-metrics-apiserver
       containers:
       - name: custom-metrics-apiserver
+        resources:
+            requests:
+              memory: "128Mi"
+            limits:
+              memory: "128Mi"
         image: quay.io/coreos/k8s-prometheus-adapter-amd64:v0.2.0
         args:
         - /adapter
