@@ -250,6 +250,8 @@ Remove the cluster with:
 
 * If you are running bash for Windows, you might have an issue with incorrect paths when querying kubectl for metrics. Use CMD instead of bash for Windows.
 
+* If you are running on Windows `gcloud` might complain about python even if you have python 2.7 installed, a fix is to then rename the binary from `python.exe` to `python2.exe`
+
 * If the cluster (API server) is unresponsive when you add load to your cluster, this is because the Kubernetes master node is being updated to match the size of the autoscaling cluster. To fix this, you have to deploy a regional cluster. Reade more here: https://cloudplatform.googleblog.com/2018/06/Regional-clusters-in-Google-Kubernetes-Engine-are-now-generally-available.html
 
 ### General Notes
