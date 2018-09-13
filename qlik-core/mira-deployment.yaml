@@ -18,7 +18,7 @@ spec:
               memory: "200Mi"
             limits:
               memory: "200Mi"
-        image: "qlikcore/mira:0.4.0"
+        image: "qlikcore/mira:1.0.0"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9100
@@ -27,9 +27,5 @@ spec:
           value: kubernetes
         - name: MIRA_ENGINE_UPDATE_INTERVAL
           value: "5000"
-      - name: kubectl
-        image: "lachlanevenson/k8s-kubectl:v1.9.10"
-        args: [ "proxy", "-p", "8001" ]
-        imagePullPolicy: IfNotPresent
       imagePullSecrets:
       - name: dockerhub
