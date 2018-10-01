@@ -4,7 +4,7 @@ This use case shows how you can set up a Qlik Core application in a Google Kuber
 
 ## Prerequisites
 
-* Set up GKE by following the GKE [Quickstart guide](https://cloud.google.com/kubernetes-engine/docs/quickstart).
+* Set up Google CLI (`gcloud`) by follwoing this guide [Quickstart guide](https://cloud.google.com/sdk/docs/quickstarts).
 
 * Modify the `settings.config` for your project.
 
