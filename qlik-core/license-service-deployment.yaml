@@ -10,6 +10,8 @@ spec:
     metadata:
       labels:
         app: license-service
+      annotations:
+        prometheus.io/scrape: 'true'
     spec:
       containers:
       - name: license-service

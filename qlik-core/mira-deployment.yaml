@@ -10,6 +10,8 @@ spec:
     metadata:
       labels:
         app: mira
+      annotations:
+        prometheus.io/scrape: 'true'
     spec:
       containers:
       - name: mira
