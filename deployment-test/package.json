@@ -7,7 +7,7 @@
   "license": "MIT",
   "devDependencies": {
     "enigma.js": "2.3.0",
-    "ws": "5.2.2",
+    "ws": "6.1.0",
     "after-work.js": "4.3.2"
   }
 }
