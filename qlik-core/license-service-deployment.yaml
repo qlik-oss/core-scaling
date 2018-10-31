@@ -27,12 +27,12 @@ spec:
         env:
         - name: LICENSES_SERIAL_NBR
           valueFrom:
-            configMapKeyRef:
+            secretKeyRef:
               name: license-data
               key: LICENSES_SERIAL_NBR
         - name: LICENSES_CONTROL_NBR
           valueFrom:
-            configMapKeyRef:
+            secretKeyRef:
               name: license-data
               key: LICENSES_CONTROL_NBR
       imagePullSecrets:
