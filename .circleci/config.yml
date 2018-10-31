@@ -3,6 +3,8 @@ jobs:
   build:
     docker:
       - image: google/cloud-sdk
+    environment:
+      TEST_CLUSTER_ZONE: europe-west3-b
     working_directory: ~/scaling
     steps:
       - checkout
@@ -14,7 +16,7 @@ jobs:
           command: |
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud --quiet config set project dev-qlik-core
-            gcloud --quiet config set compute/zone europe-west2-a
+            gcloud --quiet config set compute/zone $TEST_CLUSTER_ZONE
       - run:
           name: Accept EULA
           command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
@@ -26,7 +28,7 @@ jobs:
           environment:
             GCLOUD_NUM_NODES: 2
           command: |
-            K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
+            GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
             # Wait for all deployments to rollout
             for deployment in `kubectl get deployment -o name`; do echo `kubectl rollout status $deployment`; done
       - run:
@@ -41,7 +43,7 @@ jobs:
             npm run test
       - run:
           name: Remove test cluster
-          command: K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove
+          command: GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove
           when: always
       - run:
           name: Set Disk Name For Live Cluster
