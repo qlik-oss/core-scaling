@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: license-service
-        image: "qlikcore/licenses:1.1.4"
+        image: "qlikcore/licenses:1.2.0"
         resources:
             requests:
               memory: "16Mi"
