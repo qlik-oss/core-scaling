@@ -9,8 +9,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Store Service Account
-          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+          name: Store Service Accounts
+          command: |
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            echo $GCLOUD_SERVICE_KEY_PROD > ${HOME}/gcloud-service-key-prod.json
       - run:
           name: Configure gcloud
           command: |
@@ -52,7 +54,9 @@ jobs:
           name: Deploy qlik-core scaling example if on master
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              gcloud --quiet container clusters get-credentials core-scaling --zone=europe-west2-a
+              gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key-prod.json
+              gcloud --quiet config set project dev-prod-qlik-core
+              gcloud --quiet container clusters get-credentials core-scaling --zone=europe-west3-a
               ./run.sh update
               POD=$(kubectl get pods --selector="role=nfs-server" -o=jsonpath='{.items[0].metadata.name}')
               kubectl exec $POD -- chown -R 65534:65534 /exports/default
