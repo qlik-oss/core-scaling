@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mira
@@ -6,6 +6,9 @@ metadata:
     app: mira
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: mira
   template:
     metadata:
       labels:

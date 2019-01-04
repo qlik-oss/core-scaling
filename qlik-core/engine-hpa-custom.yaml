@@ -4,7 +4,7 @@ metadata:
   name: engine
 spec:
   scaleTargetRef:
-    apiVersion: extensions/v1beta1
+    apiVersion: apps/v1
     kind: Deployment
     name: engine
   minReplicas: 2
