@@ -51,6 +51,9 @@ jobs:
           name: Set Disk Name For Live Cluster
           command: grep -rl $DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./nfs-volumes | xargs sed -i "s/$DISK_NAME_TEST-$CIRCLE_BUILD_NUM/$DISK_NAME_PROD/g"
       - run:
+          name: Pass certificate name to ingress controller
+          command: sed -i "/annotations-prefix/a \ \ \ \ \ \ \ \ \ \ \  - --default-ssl-certificate=default/scaling-backend-crt-secret" ./ingress/ingress-nginx-dep.yaml
+      - run:
           name: Deploy qlik-core scaling example if on master
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
