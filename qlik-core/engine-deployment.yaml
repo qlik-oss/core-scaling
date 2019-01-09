@@ -13,6 +13,7 @@ spec:
         qix-engine: ""
       annotations:
         prometheus.io/scrape: 'true'
+        prometheus.io/port: '9090'
     spec:
       nodeSelector:
        cloud.google.com/gke-nodepool : default-pool
