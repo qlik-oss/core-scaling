@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -24,16 +24,27 @@ spec:
               memory: "128Mi"
             limits:
               memory: "128Mi"
-        image: quay.io/coreos/k8s-prometheus-adapter-amd64:v0.2.0
+        image: quay.io/coreos/k8s-prometheus-adapter-amd64:v0.4.1
         args:
-        - /adapter
         - --secure-port=6443
         - --logtostderr=true
         - --prometheus-url=http://prometheus.monitoring.svc:9090/
         - --metrics-relist-interval=30s
-        - --rate-interval=5m
-        - --v=10
+        - --v=2
+        - --config=/etc/adapter/config.yaml
         ports:
         - containerPort: 6443
         securityContext:
           runAsUser: 0
+        volumeMounts:
+        - mountPath: /etc/adapter/
+          name: config
+          readOnly: true
+        - mountPath: /tmp
+          name: tmp-vol
+      volumes:
+      - name: config
+        configMap:
+          name: adapter-config
+      - name: tmp-vol
+        emptyDir: {}
