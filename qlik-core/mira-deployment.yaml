@@ -23,7 +23,7 @@ spec:
               memory: "200Mi"
             limits:
               memory: "200Mi"
-        image: "qlikcore/mira:1.0.0"
+        image: "qlikcore/mira:2.0.0"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9100
