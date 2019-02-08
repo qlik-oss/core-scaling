@@ -33,7 +33,7 @@ spec:
       terminationGracePeriodSeconds: 600
       containers:
       - name: engine
-        image: "qlikcore/engine:12.311.0"
+        image: "qlikcore/engine:12.321.0"
         resources:
             requests:
               memory: "2200Mi"
