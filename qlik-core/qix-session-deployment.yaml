@@ -24,7 +24,7 @@ spec:
               memory: "100Mi"
             limits:
               memory: "100Mi"
-        image: "qlikcore/qix-session-placement-service:0.0.1-288"
+        image: "qlikcore/qix-session-placement-service:0.0.1-406"
         env:
         - name: SESSIONS_PER_ENGINE_THRESHOLD
           value: "500"
