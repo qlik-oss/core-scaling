@@ -1,0 +1,148 @@
+engine:
+  name: engine
+  replicas: 1
+  image:
+    repository: qlikcore/engine
+    tag: 12.329.0
+    pullPolicy: IfNotPresent
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
+  resources:
+  args:
+    args: [
+      "-S", "AcceptEULA=yes",
+      "-S", "LicenseServiceUrl=http://license-service:9200",
+      "-S", "DocumentDirectory=/doc",
+      "-S", "EnableABAC=1",
+      "-S", "SystemAllowRulePath=/rules/read_engine_rules.txt"
+    ]
+  ports:
+    - containerPort: 9076
+    - containerPort: 9090
+  volumeMounts:
+    - mountPath: /doc
+      name: app-nfs
+    - name: engine-prestop-hook
+      mountPath: /engine-prestop-hook
+    - mountPath: /rules
+      name: access-control
+  volumes:
+    - name: engine-prestop-hook
+      configMap:
+        name: engine-prestop-hook
+        defaultMode: "0755"
+    - name: app-nfs
+      persistentVolumeClaim:
+        claimName: nfs-server
+    - name: access-control
+      configMap:
+        name: access-control
+  service:
+    type: ClusterIP
+    ports:
+      - port: 9076
+        protocol: TCP
+        name: qix
+      - port: 9090
+        protocol: TCP
+        name: prometheus
+  hpa:
+    minReplicas: 1
+    maxReplicas: 10
+    targetAverageValue: 3000
+
+qix:
+  name: qix-session
+  replicas: 1
+  image:
+    repository: qlikcore/qix-session-placement-service
+    tag: 0.0.1-406
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      memory: "1Gi"
+    limits:
+      memory: "1Gi"
+  port: 9455
+  sessionsThreshold: 4500
+
+mira:
+  name: mira
+  replicas: 1
+  image:
+    repository: qlikcore/mira
+    tag: 2.0.0
+    pullPolicy: IfNotPresent
+  annotations:
+    prometheus.io/scrape: 'true'
+  resources:
+    requests:
+      memory: "200Mi"
+    limits:
+      memory: "200Mi"
+  ports:
+    - containerPort: 9100
+  env:
+  - name: MIRA_MODE
+    value: kubernetes
+  - name: MIRA_ENGINE_UPDATE_INTERVAL
+    value: "5000"
+  service:
+    ports:
+      - port: 9100
+        targetPort: 9100
+        protocol: TCP
+        name: http
+
+configMapPH:
+  name: engine-prestop-hook
+
+configMapAC:
+  name: access-control
+
+licenseService:
+  name: license-service
+  image:
+    repository: qlikcore/licenses
+    tag: 1.1.4
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      memory: "256Mi"
+    limits:
+      memory: "256Mi"
+  port: 9200
+
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  paths: []
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector:
+  cloud.google.com/gke-nodepool : default-pool
+
+tolerations: []
+
+affinity: {}

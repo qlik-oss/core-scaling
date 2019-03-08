@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMapAC.name }}
+data:
+  read_engine_rules.txt: |
+    resource._actions = {"*"}
+    # resource._actions = {"read"}

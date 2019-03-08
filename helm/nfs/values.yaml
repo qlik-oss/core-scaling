@@ -1,0 +1,58 @@
+
+## Persistence configuration
+##
+persistence:
+  enabled: true
+  autoSave:
+    enabled: true
+    interval: 5
+
+  diskName: my-disk
+  ## engine Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  storageClass: "-"
+
+  ## Persistence access mode
+  ## https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes-1
+  accessMode: ReadWriteMany
+
+  ## Persistence volume default size
+  size: 5Gi
+
+  ## To enable an externally defined persistent volume claim set the name of the claim.
+  ## If configured this chart will not create a persistent volume claim.
+  # existingClaim:
+
+  internalStorageClass:
+    ## Normally the storage class should be created outside this helm chart
+    ## If we want to deploy a storage class as part of the helm chart
+    ## - Provide a storageClassName above.
+    ## - set enabled true
+    ## - provide a storage class definition.
+
+    ## If enabled storage class will be configured as part of the chart.
+    ## If not enabled an external storageclass can be used by providing storageClassName above.
+    enabled: false
+
+    ## Storageclass definition
+    definition: {}
+    ## Storage classes have a provisioner that determines what volume plugin is used for provisioning PVs.
+    ## This field must be specified.
+    ## See https://kubernetes.io/docs/concepts/storage/storage-classes/
+    #  provisioner: kubernetes.io/no-provisioner
+
+    ## Reclaim policy should normally be set to Retain to avoid loosing data when deleting this helm chart.
+    # reclaimPolicy: Retain
+
+    ## Persistent Volumes that are dynamically created by a storage class will have the mount options specified
+    ## in the mountOptions field of the class.
+    #  mountOptions: {}
+
+    ## Storage classes have parameters that describe volumes belonging to the storage class.
+    ## Different parameters may be accepted depending on the provisioner.
+    #  parameters: {}

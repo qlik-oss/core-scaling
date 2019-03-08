@@ -1,0 +1,23 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: engine
+  namespace: default
+  labels:
+    app.kubernetes.io/name: engine
+    helm.sh/chart: {{ include "qlik-core.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: engine
+  minReplicas: {{ .Values.engine.hpa.minReplicas }}
+  maxReplicas: {{ .Values.engine.hpa.maxReplicas }}
+  metrics:
+  - type: Pods
+    pods:
+      metricName: qix_active_sessions
+      targetAverageValue: {{ .Values.engine.hpa.targetAverageValue }}
+  

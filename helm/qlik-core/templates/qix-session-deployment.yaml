@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.qix.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.qix.name }}
+    helm.sh/chart: {{ include "qlik-core.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.qix.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.qix.name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.qix.name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/v1/metrics'
+    spec:
+      containers:
+      - name: {{ .Values.qix.name }}
+        image: "{{ .Values.qix.image.repository }}:{{ .Values.qix.image.tag }}"
+        resources:
+          {{- toYaml .Values.qix.resources | nindent 10 }}
+        env:
+        - name: SESSIONS_PER_ENGINE_THRESHOLD
+          value: "{{ .Values.qix.sessionsThreshold }}"
+        - name: SESSION_STRATEGY
+          value: "weighted"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: {{ .Values.qix.port }}
+      imagePullSecrets:
+      - name: dockerhub
