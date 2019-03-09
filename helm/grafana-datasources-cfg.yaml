@@ -18,7 +18,7 @@ data:
       type: prometheus
       access: proxy
       orgId: 1
-      url: http://prometheus.monitoring.svc:80
+      url: http://prometheus-server.monitoring.svc:80
       isDefault: true
       version: 1
       editable: true

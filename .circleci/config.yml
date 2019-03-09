@@ -21,17 +21,22 @@ jobs:
             gcloud --quiet config set compute/zone $TEST_CLUSTER_ZONE
       - run:
           name: Accept EULA
-          command: grep -rl AcceptEULA ./qlik-core | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g'
-      - run:
-          name: Set Disk Name For Test Cluster
-          command: grep -rl my-disk ./nfs-volumes | xargs sed -i "s/my-disk/$DISK_NAME_TEST-$CIRCLE_BUILD_NUM/g"
+          command: grep -rl AcceptEULA=no ./helm | xargs sed -i 's/AcceptEULA=no/AcceptEULA=yes/g' || true
       - run:
           name: Deploy test cluster
           environment:
             GCLOUD_NUM_NODES: 2
           command: |
-            GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh deploy
-            # Wait for all deployments to rollout
+            curl https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz | tar xz
+            chmod +x linux-amd64/helm && mv linux-amd64/helm /usr/local/bin/.
+
+            # bootstrap cluster & nodes
+            GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh bootstrap
+
+            # deploy configurations & services
+            GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh upgrade
+
+            # wait for all deployments to rollout
             for deployment in `kubectl get deployment -o name`; do echo `kubectl rollout status $deployment`; done
       - run:
           name: Install prerequisites and run sanity tests towards the test cluster
@@ -41,18 +46,20 @@ jobs:
             apt-get -y install nodejs
             npm install
             apt-get -y install jq
-            export TEST_CLUSTER_IP="$(kubectl get service ingress-nginx --namespace ingress-nginx -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
+            export TEST_CLUSTER_IP="$(kubectl get service nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
             npm run test
       - run:
           name: Remove test cluster
-          command: GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove
+          command: |
+              GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove_cluster
           when: always
-      - run:
-          name: Set Disk Name For Live Cluster
-          command: grep -rl $DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./nfs-volumes | xargs sed -i "s/$DISK_NAME_TEST-$CIRCLE_BUILD_NUM/$DISK_NAME_PROD/g"
-      - run:
-          name: Pass certificate name to ingress controller
-          command: sed -i "/annotations-prefix/a \ \ \ \ \ \ \ \ \ \ \  - --default-ssl-certificate=default/scaling-backend-crt-secret" ./ingress/ingress-nginx-dep.yaml
+      # should this be run on non-master?
+      # - run:
+      #     name: Set Disk Name For Live Cluster
+      #     command: grep -rl $DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./nfs-volumes | xargs sed -i "s/$DISK_NAME_TEST-$CIRCLE_BUILD_NUM/$DISK_NAME_PROD/g"
+      # - run:
+      #     name: Pass certificate name to ingress controller
+      #     command: sed -i "/annotations-prefix/a \ \ \ \ \ \ \ \ \ \ \  - --default-ssl-certificate=default/scaling-backend-crt-secret" ./ingress/ingress-nginx-dep.yaml
       - run:
           name: Deploy qlik-core scaling example if on master
           command: |
@@ -60,7 +67,7 @@ jobs:
               gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key-prod.json
               gcloud --quiet config set project dev-prod-qlik-core
               gcloud --quiet container clusters get-credentials core-scaling --zone=europe-west3-a
-              ./run.sh update
+              ./run.sh upgrade
               POD=$(kubectl get pods --selector="role=nfs-server" -o=jsonpath='{.items[0].metadata.name}')
               kubectl exec $POD -- chown -R 65534:65534 /exports/default
             fi
@@ -70,7 +77,11 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               for deployment in `kubectl get deployment -o name`; do echo `kubectl rollout status $deployment`; done
-              export TEST_CLUSTER_IP="$(kubectl get service ingress-nginx --namespace ingress-nginx -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
+              export TEST_CLUSTER_IP="$(kubectl get service nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
               #note TEST_CLUSTER_IP will here get the IP of the live deployed cluster.
               npm run test
             fi
+      - run:
+          name: Remove test disk
+          command: GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove_disks
+          when: always

@@ -1,0 +1,9 @@
+sidecar:
+  datasources:
+    enabled: true
+  dashboards:
+    enabled: true
+
+env:
+  GF_AUTH_ANONYMOUS_ENABLED: true
+  GF_AUTH_ANONYMOUS_ORG_ROLE: Admin

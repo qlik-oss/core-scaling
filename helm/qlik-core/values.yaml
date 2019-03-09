@@ -15,7 +15,8 @@ engine:
       "-S", "LicenseServiceUrl=http://license-service:9200",
       "-S", "DocumentDirectory=/doc",
       "-S", "EnableABAC=1",
-      "-S", "SystemAllowRulePath=/rules/read_engine_rules.txt"
+      "-S", "SystemAllowRulePath=/rules/read_only.txt"
+#      "-S", "SystemAllowRulePath=/rules/allow_all.txt"
     ]
   ports:
     - containerPort: 9076
@@ -114,9 +115,7 @@ licenseService:
       memory: "256Mi"
   port: 9200
 
-
 ingress:
-  enabled: false
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"

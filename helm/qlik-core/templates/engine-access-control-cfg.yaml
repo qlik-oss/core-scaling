@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.configMapAC.name }}
 data:
-  read_engine_rules.txt: |
+  read_only.txt: |
+    resource._actions = {"read"}
+  allow_all.txt: |
     resource._actions = {"*"}
-    # resource._actions = {"read"}

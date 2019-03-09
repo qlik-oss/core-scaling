@@ -36,14 +36,14 @@ controller:
       prometheus.io/port: "10254"
 
   config:
-    use-proxy-protocol: "true"
+    use-proxy-protocol: "false"
     enable-vts-status: "true"
     ssl-redirect: "true"
     http-snippet: |-
-      upstream engine_backend_special {
+      upstream engine_dynamic_backend {
         server 0.0.0.1;
         balancer_by_lua_block {
-        local balancer = require "ngx.balancer";
+          local balancer = require "ngx.balancer";
           local ok, err = balancer.set_current_peer(ngx.var.qix_session_host, ngx.var.qix_session_port);
           if not ok then
             return ngx.exit(500)
@@ -51,32 +51,33 @@ controller:
         }
       }
     server-snippet: |
-      error_log syslog:server=206.196.17.59 debug;
-      #1 day
-      keepalive_timeout 10800s; # 3
-      proxy_read_timeout 86400s; #1 day
-      proxy_send_timeout 86400s;
-      location /qix_session_special {
-        internal; # only exposed internally, used during requests to /doc
+      # global timeouts
+      keepalive_timeout 3h;
+      proxy_read_timeout 1d;
+      proxy_send_timeout 1d;
+
+      location /create_qix_session {
+        internal;
         proxy_pass http://qix-session.default.svc.cluster.local:9455/v1/session;
       }
+
       location /app {
           set $qix_session_host '';
           set $qix_session_port '';
 
           access_by_lua_block {
             local uri = string.sub(ngx.var.request_uri, 5)
-            local routeResponse = ngx.location.capture("/qix_session_special" .. uri)
+            local routeResponse = ngx.location.capture("/create_qix_session" .. uri)
             if routeResponse.status == 200 then
               local cjson = require "cjson";
               local qix_session_route_data = cjson.decode(routeResponse.body);
               ngx.var.qix_session_host = qix_session_route_data.ip;
               ngx.var.qix_session_port = qix_session_route_data.port;
               ngx.req.set_header("X-Qlik-Session", qix_session_route_data.sessionId)
-              ngx.req.set_uri("/app/engineData")
-              ngx.log(ngx.INFO, "QIX Engine session placed on " .. qix_session_route_data.ip .. " with id " .. qix_session_route_data.sessionId)
+              ngx.req.set_uri("/app/")
+              ngx.log(ngx.INFO, "Session placement: Session placed on " .. qix_session_route_data.ip .. " with id " .. qix_session_route_data.sessionId)
             else
-              ngx.log(ngx.WARN, "Invalid response from session service: " .. routeResponse.status)
+              ngx.log(ngx.WARN, "Session placement: Unexpected response: " .. routeResponse.status)
               ngx.exit(routeResponse.status)
             end
           }
@@ -89,10 +90,12 @@ controller:
           proxy_set_header X-NginX-Proxy true;
           proxy_set_header Connection $connection_upgrade;
           proxy_set_header Upgrade $http_upgrade;
+
+          # websocket timeouts
           proxy_connect_timeout 7d;
           proxy_read_timeout 7d;
           proxy_send_timeout 7d;
           proxy_http_version 1.1;
 
-          proxy_pass http://engine_backend_special/;
+          proxy_pass http://engine_dynamic_backend/;
         }

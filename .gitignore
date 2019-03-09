@@ -13,6 +13,6 @@ metrics-ca-config.json
 metrics-ca.crt
 metrics-ca.key
 cm-adapter-serving-certs.yaml
-create_role_binding.yml
+create_role_binding.yaml
 node_modules/
 .vscode/
