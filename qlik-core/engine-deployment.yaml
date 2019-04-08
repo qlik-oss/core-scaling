@@ -75,8 +75,7 @@ spec:
       initContainers:
         - name: volume-mount-owner
           image: "alpine:3.5"
-          # Ensure the owner is nobody:nogroup
-          command: ["sh", "-c", "chown -R 65534:65534 /doc"]
+          command: ["sh", "-c", "chown -R 1910:1910 /doc"]
           volumeMounts:
             - name: app-nfs
               mountPath: /doc
