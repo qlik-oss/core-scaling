@@ -63,8 +63,8 @@ function upgrade() {
   # copy over apps
   copy_apps
 
-  # qlik core stack
-  helm upgrade --install qlik-core ./helm/qlik-core
+  # qlik core stack - set acceptEULA to yes to accept the EULA
+  helm upgrade --install --set engine.acceptEULA=$ACCEPT_EULA qlik-core ./helm/qlik-core
   helm upgrade --repo https://qlik.bintray.com/osscharts --install mira mira
 }
 
