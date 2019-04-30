@@ -38,10 +38,20 @@ spec:
       containers:
         - name: {{ .Values.engine.name }}
           image: "{{ .Values.engine.image.repository }}:{{ .Values.engine.image.tag }}"
+          imagePullPolicy: {{ .Values.engine.image.pullPolicy }}
+          args:
+            - -S
+            - AcceptEULA={{ .Values.engine.acceptEULA }}
+            - -S
+            - LicenseServiceUrl=http://license-service:9200
+            - -S
+            - DocumentDirectory=/doc
+            - -S
+            - EnableABAC=1
+            - -S
+            - SystemAllowRulePath=/rules/read_only.txt
           resources:
             {{- toYaml .Values.engine.resources | nindent 12 }}
-          {{- toYaml .Values.engine.args | nindent 10 }}
-          imagePullPolicy: {{ .Values.engine.image.pullPolicy }}
       {{- with .Values.engine.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
@@ -68,7 +78,7 @@ spec:
       initContainers:
         - name: volume-mount-owner
           image: "alpine:3.5" 
-          command: ["sh", "-c", "chown -R 65534:65534 /doc"]
+          command: ["sh", "-c", "chown -R 1910:1910 /doc"]
           volumeMounts:
             - name: app-nfs
               mountPath: /doc

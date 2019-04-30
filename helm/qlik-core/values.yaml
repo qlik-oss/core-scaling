@@ -1,23 +1,15 @@
 engine:
   name: engine
+  acceptEULA: "no"
   replicas: 1
   image:
     repository: qlikcore/engine
-    tag: 12.329.0
+    tag: 12.368.0
     pullPolicy: IfNotPresent
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '9090'
-  resources:
-  args:
-    args: [
-      "-S", "AcceptEULA=yes",
-      "-S", "LicenseServiceUrl=http://license-service:9200",
-      "-S", "DocumentDirectory=/doc",
-      "-S", "EnableABAC=1",
-      "-S", "SystemAllowRulePath=/rules/read_only.txt"
-#      "-S", "SystemAllowRulePath=/rules/allow_all.txt"
-    ]
+  resources: 
   ports:
     - containerPort: 9076
     - containerPort: 9090
