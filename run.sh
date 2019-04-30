@@ -13,23 +13,24 @@ command=$1
 function bootstrap() {
   # create cluster
   gcloud container --project $GCLOUD_PROJECT clusters create $K8S_CLUSTER \
-  --zone $GCLOUD_ZONE --username="admin" --cluster-version $K8S_VERSION \
+  --zone $GCLOUD_ZONE --no-enable-basic-auth --cluster-version $K8S_VERSION \
   --machine-type $GCLOUD_MACHINE_TYPE --image-type $GCLOUD_IMAGE_TYPE \
-  --disk-size $GCLOUD_DISK_SIZE --scopes $GCLOUD_SCOPES --num-nodes $GCLOUD_NUM_NODES \
+  --disk-size $GCLOUD_DISK_SIZE --scopes=$GCLOUD_SCOPES --num-nodes $GCLOUD_NUM_NODES \
   --network "default" --enable-cloud-logging --enable-cloud-monitoring \
   --subnetwork "default" --enable-autoscaling --min-nodes $GCLOUD_MIN_NODES \
-  --max-nodes $GCLOUD_MAX_NODES
+  --max-nodes $GCLOUD_MAX_NODES --metadata disable-legacy-endpoints=true \
+  --enable-ip-alias --enable-autoupgrade --enable-autorepair --addons HorizontalPodAutoscaling \
+  --no-issue-client-certificate
 
   # create volume
   gcloud compute disks create --project=$GCLOUD_PROJECT --size=10GB --zone=$GCLOUD_ZONE $DISK_NAME
 
   # create monitoring node pool
-  gcloud container node-pools create monitoring --project=$GCLOUD_PROJECT --cluster=$K8S_CLUSTER \
-  --machine-type=$GCLOUD_MACHINE_TYPE --scopes $GCLOUD_SCOPES --num-nodes=1 --zone $GCLOUD_ZONE
+  gcloud container node-pools create monitoring --project=$GCLOUD_PROJECT --cluster=$K8S_CLUSTER --scopes=$GCLOUD_SCOPES \
+  --machine-type=$GCLOUD_MACHINE_TYPE --num-nodes=1 --zone $GCLOUD_ZONE --metadata disable-legacy-endpoints=true
 
   # infra configuration
-  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run -o=yaml > create_role_binding.yaml
-  kubectl apply -f ./create_role_binding.yaml
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run -o=yaml | kubectl apply -f -
   kubectl apply -f ./helm/rbac-config.yaml
   kubectl apply -f ./helm/namespaces.yaml
   helm init --service-account tiller --upgrade
@@ -64,8 +65,7 @@ function upgrade() {
 
   # qlik core stack
   helm upgrade --install qlik-core ./helm/qlik-core
-  helm repo add qlikoss https://qlik.bintray.com/osscharts
-  helm upgrade --install mira qlikoss/mira
+  helm upgrade --repo https://qlik.bintray.com/osscharts --install mira mira
 }
 
 function grafana() {
