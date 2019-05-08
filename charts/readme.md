@@ -11,6 +11,9 @@ In general, check the `../run.sh` file for implementation details.
 * Move qlik core helm stack to core-orchestration, and use as dependency here instead
 * Consume the official engine chart?
 * Introduce chart-of-charts with dependencies: https://github.com/codefresh-io/helm-chart-examples/tree/master/chart-of-charts and remove `run.sh` in favor of vanilla helm
-* Fix Circle CI
-* Fix deployment test
-* Expose AcceptEULA as required value in engine chart
+* Fix Circle CI build master
+* Remove namespaces
+* remove node selector - use labels. 
+* rollback
+
+HOW DO WE HANDLE ACCEPT EULA... 

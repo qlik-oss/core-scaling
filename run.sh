@@ -31,8 +31,8 @@ function bootstrap() {
 
   # infra configuration
   kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run -o=yaml | kubectl apply -f -
-  kubectl apply -f ./helm/rbac-config.yaml
-  kubectl apply -f ./helm/namespaces.yaml
+  kubectl apply -f ./config/rbac-config.yaml
+  kubectl create namespace monitoring
   helm init --service-account tiller --upgrade
   kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 }
@@ -50,21 +50,21 @@ function upgrade() {
   kubectl create secret generic license-data --from-literal LICENSES_SERIAL_NBR=$LICENSES_SERIAL_NBR --from-literal LICENSES_CONTROL_NBR=$LICENSES_CONTROL_NBR --dry-run -o=yaml | kubectl apply -f -
 
   # configuration
-  kubectl apply -f ./helm/grafana-datasources-cfg.yaml
-  kubectl apply -f ./helm/grafana-dashboards-cfg.yaml
+  kubectl apply -f ./config/grafana-datasources-cfg.yaml
+  kubectl apply -f ./config/grafana-dashboards-cfg.yaml
 
   # infrastructure
   helm upgrade --install prometheus --namespace monitoring stable/prometheus
-  helm upgrade --install custom-metrics-apiserver --namespace monitoring stable/prometheus-adapter -f ./helm/values/prom-adapter.yaml
-  helm upgrade --install grafana --namespace monitoring stable/grafana -f ./helm/values/grafana.yaml
-  helm upgrade --install nginx-ingress stable/nginx-ingress -f ./helm/values/nginx-ingress.yaml
-  helm upgrade --install nfs-server ./helm/nfs --set persistence.diskName=$DISK_NAME
+  helm upgrade --install custom-metrics-apiserver --namespace monitoring stable/prometheus-adapter -f ./values/prom-adapter.yaml
+  helm upgrade --install grafana --namespace monitoring stable/grafana -f ./values/grafana.yaml
+  helm upgrade --install nginx-ingress stable/nginx-ingress -f ./values/nginx-ingress.yaml
+  helm upgrade --install nfs-server ./charts/nfs --set persistence.diskName=$DISK_NAME
 
   # copy over apps
   copy_apps
 
   # qlik core stack - set acceptEULA to yes to accept the EULA
-  helm upgrade --install --set engine.acceptEULA=$ACCEPT_EULA qlik-core ./helm/qlik-core
+  helm upgrade --install --set engine.acceptEULA=$ACCEPT_EULA qlik-core ./charts/qlik-core
   helm repo add qlikoss https://qlik.bintray.com/osscharts
   helm upgrade --install mira qlikoss/mira
 }
