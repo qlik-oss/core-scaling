@@ -75,7 +75,7 @@ controller:
               ngx.var.qix_session_port = qix_session_route_data.port;
               ngx.req.set_header("X-Qlik-Session", qix_session_route_data.sessionId)
               ngx.req.set_uri("/app/")
-              ngx.log(ngx.INFO, "Session placement: Session placed on " .. qix_session_route_data.ip .. " with id " .. qix_session_route_data.sessionId)
+              ngx.log(ngx.NOTICE, "Session placement: Session placed on " .. qix_session_route_data.ip .. " with id " .. qix_session_route_data.sessionId)
             else
               ngx.log(ngx.WARN, "Session placement: Unexpected response: " .. routeResponse.status)
               ngx.exit(routeResponse.status)

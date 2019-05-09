@@ -30,11 +30,9 @@ engine:
     - name: access-control
       configMap:
         name: access-control
-  service:
-    type: ClusterIP
   hpa:
     minReplicas: 1
-    maxReplicas: 10
+    maxReplicas: 3
     targetAverageValue: 3000
 
 qix:
