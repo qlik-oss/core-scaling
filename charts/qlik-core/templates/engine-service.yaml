@@ -9,10 +9,13 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   type: {{ .Values.engine.service.type }}
-  {{- with .Values.engine.service.ports }}
   ports:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    - port: 9076
+      protocol: TCP
+      name: qix
+    - port: 9090
+      protocol: TCP
+      name: prometheus
   selector:
     app.kubernetes.io/name: {{ .Values.engine.name }}
     app.kubernetes.io/instance: {{ .Release.Name }}

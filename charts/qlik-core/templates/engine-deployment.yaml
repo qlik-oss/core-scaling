@@ -52,10 +52,9 @@ spec:
             - SystemAllowRulePath=/rules/read_only.txt
           resources:
             {{- toYaml .Values.engine.resources | nindent 12 }}
-      {{- with .Values.engine.ports }}
           ports:
-            {{- toYaml . | nindent 12 }}
-      {{- end }}
+            - containerPort: 9076
+            - containerPort: 9090
       {{- with .Values.engine.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}

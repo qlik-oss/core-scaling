@@ -1,5 +1,7 @@
 engine:
   name: engine
+  ## Accept EULA
+  ## This needs to be changed to start engine
   acceptEULA: "no"
   replicas: 1
   image:
@@ -10,9 +12,6 @@ engine:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '9090'
   resources: 
-  ports:
-    - containerPort: 9076
-    - containerPort: 9090
   volumeMounts:
     - mountPath: /doc
       name: app-nfs
@@ -33,13 +32,6 @@ engine:
         name: access-control
   service:
     type: ClusterIP
-    ports:
-      - port: 9076
-        protocol: TCP
-        name: qix
-      - port: 9090
-        protocol: TCP
-        name: prometheus
   hpa:
     minReplicas: 1
     maxReplicas: 10
