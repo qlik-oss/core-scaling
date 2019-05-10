@@ -10,90 +10,92 @@ source settings.config
 
 command=$1
 
-function create_cluster() {
+function bootstrap() {
+  # create cluster
   gcloud container --project $GCLOUD_PROJECT clusters create $K8S_CLUSTER \
-  --zone $GCLOUD_ZONE --username="admin" --cluster-version $K8S_VERSION \
+  --zone $GCLOUD_ZONE --no-enable-basic-auth --cluster-version $K8S_VERSION \
   --machine-type $GCLOUD_MACHINE_TYPE --image-type $GCLOUD_IMAGE_TYPE \
-  --disk-size $GCLOUD_DISK_SIZE --scopes $GCLOUD_SCOPES --num-nodes $GCLOUD_NUM_NODES \
+  --disk-size $GCLOUD_DISK_SIZE --scopes=$GCLOUD_SCOPES --num-nodes $GCLOUD_NUM_NODES \
   --network "default" --enable-cloud-logging --enable-cloud-monitoring \
   --subnetwork "default" --enable-autoscaling --min-nodes $GCLOUD_MIN_NODES \
-  --max-nodes $GCLOUD_MAX_NODES &&
-gcloud compute disks create --size=10GB --zone=$GCLOUD_ZONE $DISK_NAME &&
-gcloud container node-pools create monitoring --cluster=$K8S_CLUSTER \
-  --machine-type=$GCLOUD_MACHINE_TYPE --scopes $GCLOUD_SCOPES --num-nodes=1 --zone $GCLOUD_ZONE
+  --max-nodes $GCLOUD_MAX_NODES --metadata disable-legacy-endpoints=true \
+  --enable-ip-alias --enable-autoupgrade --enable-autorepair --addons HorizontalPodAutoscaling \
+  --no-issue-client-certificate
+
+  # create volume
+  gcloud compute disks create --project=$GCLOUD_PROJECT --size=10GB --zone=$GCLOUD_ZONE $DISK_NAME
+
+  # create monitoring node pool
+  gcloud container node-pools create monitoring --project=$GCLOUD_PROJECT --cluster=$K8S_CLUSTER --scopes=$GCLOUD_SCOPES \
+  --machine-type=$GCLOUD_MACHINE_TYPE --num-nodes=1 --zone $GCLOUD_ZONE --metadata disable-legacy-endpoints=true
+
+  # infra configuration
+  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run -o=yaml | kubectl apply -f -
+  kubectl apply -f ./config/rbac-config.yaml
+  kubectl create namespace monitoring
+  helm init --service-account tiller --upgrade
+  kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 }
 
-function deploy_enviroment() {
-  kubectl apply -f ./namespaces.yaml
-  kubectl apply -f ./prometheus
-  kubectl apply -f ./custom-metrics-api
-  kubectl apply -f ./ingress
-  kubectl apply -f ./nfs-volumes
-  kubectl apply -f ./grafana
-}
-
-function create_role_binding() {
-  #Create a yaml file so we can use apply
-  kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account) --dry-run -o=yaml > create_role_binding.yml
-  kubectl apply -f create_role_binding.yml
-}
-
-function doc_seed() {
+function copy_apps() {
+  kubectl rollout status -w deployment/nfs-server
   POD=$(kubectl get pods --selector="role=nfs-server" -o=jsonpath='{.items[0].metadata.name}')
   # NOTE: Using the // format on file paths is to make it work in Git Bash on Windows which otherwise converts such
   #       paths to Windows paths.
   kubectl cp ./doc/default $POD://exports
 }
 
-function deploy_core() {
-  kubectl apply -f ./rbac-config.yaml
+function upgrade() {
+  # set up licensing info/secret
   kubectl create secret generic license-data --from-literal LICENSES_SERIAL_NBR=$LICENSES_SERIAL_NBR --from-literal LICENSES_CONTROL_NBR=$LICENSES_CONTROL_NBR --dry-run -o=yaml | kubectl apply -f -
-  kubectl apply -f ./qlik-core
+
+  # configuration
+  kubectl apply -f ./config/grafana-datasources-cfg.yaml
+  kubectl apply -f ./config/grafana-dashboards-cfg.yaml
+
+  # infrastructure
+  helm upgrade --install prometheus --namespace monitoring stable/prometheus
+  helm upgrade --install custom-metrics-apiserver --namespace monitoring stable/prometheus-adapter -f ./values/prom-adapter.yaml
+  helm upgrade --install grafana --namespace monitoring stable/grafana -f ./values/grafana.yaml
+  helm upgrade --install nginx-ingress stable/nginx-ingress -f ./values/nginx-ingress.yaml
+  helm upgrade --install nfs-server ./charts/nfs --set persistence.diskName=$DISK_NAME
+
+  # copy over apps
+  copy_apps
+
+  # qlik core stack - set acceptEULA to yes to accept the EULA
+  helm upgrade --install --set engine.acceptEULA=$ACCEPT_EULA qlik-core ./charts/qlik-core
+  helm repo add qlikoss https://qlik.bintray.com/osscharts
+  helm upgrade --install mira qlikoss/mira
 }
 
-function port_forward_grafana() {
+function grafana() {
   kubectl port-forward --namespace=monitoring $(kubectl get pods --namespace=monitoring --selector="app=grafana" -o=jsonpath='{.items[0].metadata.name}') 3000:3000
 }
 
 function remove_cluster() {
-  gcloud container -q clusters delete $K8S_CLUSTER --zone $GCLOUD_ZONE &&
-  gcloud compute -q disks delete $DISK_NAME --zone $GCLOUD_ZONE
+  gcloud container -q clusters delete $K8S_CLUSTER --project $GCLOUD_PROJECT --zone $GCLOUD_ZONE
 }
 
-function get_external_ip() {
-  kubectl get service ingress-nginx --namespace ingress-nginx
+function remove_disks() {
+  gcloud compute -q disks delete $DISK_NAME --project $GCLOUD_PROJECT --zone $GCLOUD_ZONE
 }
 
-function deploy_all() {
-  create_cluster
-  create_role_binding
-  deploy_enviroment
-
-  echo "Waiting for deployment to run"
-  sleep 50
-
-  doc_seed
-  deploy_core
-
-  get_external_ip
+function wipe() {
+  remove_cluster
+  remove_disks
 }
 
-function update_cluster() {
-  create_role_binding
-  deploy_enviroment
-
-  echo "Waiting for deployment to run"
-  sleep 50
-
-  doc_seed
-  deploy_core
+function external_ip() {
+  kubectl get service nginx-ingress-controller
 }
 
-if [ "$command" == "deploy" ]; then deploy_all
-elif [ "$command" == "create" ]; then create_cluster
-elif [ "$command" == "update" ]; then update_cluster
-elif [ "$command" == "populate-docs" ]; then doc_seed
-elif [ "$command" == "remove" ]; then remove_cluster
-elif [ "$command" == "ip" ]; then get_external_ip
-elif [ "$command" == "grafana" ]; then port_forward_grafana
-else echo "Invalid option: $command - please use one of: deploy, create, update, docs, remove, ip, grafana"; fi
+if [ "$command" == "bootstrap" ]; then bootstrap
+elif [ "$command" == "upgrade" ]; then upgrade
+elif [ "$command" == "copy-apps" ]; then copy_apps
+elif [ "$command" == "remove-cluster" ]; then remove_cluster
+elif [ "$command" == "remove-disks" ]; then remove_disks
+elif [ "$command" == "wipe" ]; then wipe
+elif [ "$command" == "ip" ]; then external_ip
+elif [ "$command" == "grafana" ]; then grafana
+else echo "Invalid option: $command - please use one of: bootstrap, upgrade, copy-apps, remove_cluster, remove_disks, wipe, ip, grafana"; fi

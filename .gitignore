@@ -1,18 +1,1 @@
-# Compiled files
-*.tfstate
-*.tfstate.backup
-
-# Module directory
-.terraform/
-.idea
-
-apiserver-key.pem
-apiserver.csr
-apiserver.pem
-metrics-ca-config.json
-metrics-ca.crt
-metrics-ca.key
-cm-adapter-serving-certs.yaml
-create_role_binding.yml
 node_modules/
-.vscode/

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.licenseService.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.licenseService.name }}
+    helm.sh/chart: {{ include "qlik-core.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.licenseService.name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.licenseService.name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+      - name: {{ .Values.licenseService.name }}
+        image: "{{ .Values.licenseService.image.repository }}:{{ .Values.licenseService.image.tag }}"
+        resources:
+          {{- toYaml .Values.licenseService.resources | nindent 10 }}
+        imagePullPolicy: {{ .Values.licenseService.image.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.licenseService.port }}
+        env:
+        - name: LICENSES_SERIAL_NBR
+          valueFrom:
+            secretKeyRef:
+              name: license-data
+              key: LICENSES_SERIAL_NBR
+        - name: LICENSES_CONTROL_NBR
+          valueFrom:
+            secretKeyRef:
+              name: license-data
+              key: LICENSES_CONTROL_NBR
+      imagePullSecrets:
+      - name: dockerhub

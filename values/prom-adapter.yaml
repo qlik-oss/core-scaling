@@ -1,0 +1,14 @@
+prometheus:
+  url: http://prometheus-server.monitoring.svc
+  port: 80
+
+rules:
+  default: false
+  custom:
+  - seriesQuery: 'qix_active_sessions'
+    metricsQuery: 'sum(<<.Series>>) by (<<.GroupBy>>)'
+    seriesFilters: []
+    resources:
+      overrides:
+        kubernetes_namespace: {resource: "namespace"}
+        kubernetes_pod_name: {resource: "pod"}

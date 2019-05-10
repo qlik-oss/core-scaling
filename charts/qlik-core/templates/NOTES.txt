@@ -1,0 +1,6 @@
+{{- if eq (printf "%s" .Values.engine.acceptEULA) "no" }}
+################################################################################################
+####   ERROR: You did not agree to the EULA in your 'helm install' call.                    ####
+####   Try 'helm upgrade --install --set engine.acceptEULA=yes qlik-core ./helm/qlik-core'. ####
+################################################################################################
+{{- end }}

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMapPH.name }}
+data:
+  engine-prestop-hook.sh: |-
+    while true
+    do
+      sessionCount=$(curl --silent localhost:9090/metrics | grep -oE '(qix_active_sessions\ [0-9]+)' | grep -oE '([0-9]+)')
+      if [ "$sessionCount" -eq "0" ]
+      then
+        exit 0
+      fi
+      sleep 1
+    done

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.licenseService.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.licenseService.name }}
+    helm.sh/chart: {{ include "qlik-core.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.licenseService.port }}
+      targetPort: {{ .Values.licenseService.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ .Values.licenseService.name }}
