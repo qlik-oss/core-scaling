@@ -6,7 +6,7 @@ engine:
   replicas: 1
   image:
     repository: qlikcore/engine
-    tag: 12.368.0
+    tag: 12.387.0
     pullPolicy: IfNotPresent
   annotations:
     prometheus.io/scrape: 'true'
