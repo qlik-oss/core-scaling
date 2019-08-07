@@ -14,6 +14,7 @@ jobs:
           command: |
             echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
             echo $GCLOUD_SERVICE_KEY_PROD > ${HOME}/gcloud-service-key-prod.json
+            echo $NGINX_CONF > ${HOME}/nginx-ingress.yaml
       - run:
           name: Configure gcloud
           command: |
@@ -52,6 +53,10 @@ jobs:
               GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove-cluster
           when: always
       - run:
+          name: Remove test disk
+          command: GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove-disks
+          when: always
+      - run:
           name: Deploy qlik-core scaling example if on master
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
@@ -59,7 +64,7 @@ jobs:
               gcloud --quiet config set project dev-prod-qlik-core
               gcloud --quiet container clusters get-credentials core-scaling --zone=europe-west3-a
               DISK_NAME=$DISK_NAME_PROD ./run.sh upgrade
-              helm upgrade --set controller.extraArgs.default-ssl-certificate=default/scaling-backend-crt-secret nginx-ingress
+              helm upgrade --install nginx-ingress stable/nginx-ingress -f ${HOME}/nginx-ingress.yaml
               POD=$(kubectl get pods --selector="role=nfs-server" -o=jsonpath='{.items[0].metadata.name}')
               kubectl exec $POD -- chown -R 1910:1910 /exports/default
             fi
@@ -73,7 +78,3 @@ jobs:
               #note TEST_CLUSTER_IP will here get the IP of the live deployed cluster.
               npm run test
             fi
-      - run:
-          name: Remove test disk
-          command: GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove-disks
-          when: always
