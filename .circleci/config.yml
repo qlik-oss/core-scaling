@@ -64,6 +64,8 @@ jobs:
               gcloud --quiet container clusters get-credentials core-scaling --zone=europe-west3-a
               echo $NGINX_CONF > ./values/nginx-ingress.yaml
               DISK_NAME=$DISK_NAME_PROD ./run.sh upgrade
+              POD=$(kubectl get pods --selector="role=nfs-server" -o=jsonpath='{.items[0].metadata.name}')	
+              kubectl exec $POD -- chown -R 1910:1910 /exports/default
             fi
       - run:
           name: Run the sanity tests toward the prod cluster (https://urbanization.qlikcore.com)
