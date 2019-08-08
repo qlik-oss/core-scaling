@@ -2,12 +2,12 @@
   "name": "deployment-test",
   "version": "1.0.0",
   "scripts": {
-    "test": "aw node --glob ./verify-deployment.spec.js"
+    "test": "aw --test ./verify-deployment.spec.js  --babel.enable false"
   },
   "license": "MIT",
   "devDependencies": {
+    "@after-work.js/aw": "6.0.5",
     "enigma.js": "2.4.0",
-    "ws": "7.1.1",
-    "after-work.js": "4.3.2"
+    "ws": "7.1.1"
   }
 }
