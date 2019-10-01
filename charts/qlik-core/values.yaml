@@ -11,7 +11,7 @@ engine:
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '9090'
-  resources: 
+  resources:
   volumeMounts:
     - mountPath: /doc
       name: app-nfs
@@ -88,7 +88,7 @@ licenseService:
   name: license-service
   image:
     repository: qlikcore/licenses
-    tag: 1.1.4
+    tag: 1.37.0
     pullPolicy: IfNotPresent
   resources:
     requests:

@@ -30,15 +30,10 @@ spec:
         ports:
         - containerPort: {{ .Values.licenseService.port }}
         env:
-        - name: LICENSES_SERIAL_NBR
+        - name: LICENSE_KEY
           valueFrom:
             secretKeyRef:
               name: license-data
-              key: LICENSES_SERIAL_NBR
-        - name: LICENSES_CONTROL_NBR
-          valueFrom:
-            secretKeyRef:
-              name: license-data
-              key: LICENSES_CONTROL_NBR
+              key: LICENSE_KEY
       imagePullSecrets:
       - name: dockerhub
