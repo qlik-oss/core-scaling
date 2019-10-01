@@ -147,7 +147,7 @@ Now that the GKE cluster is set up and the documents are loaded into the cluster
 1. Add a configmap with your license data
 
     ```bash
-    kubectl create configmap license-data-v2 --from-literal LICENSE_KEY_=YOUR-LICENSE-KEY
+    kubectl create configmap license-data --from-literal LICENSE_KEY_=YOUR-LICENSE-KEY
     ```
 
 1. Deploy Qlik Core:

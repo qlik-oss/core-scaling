@@ -33,7 +33,7 @@ spec:
         - name: LICENSE_KEY
           valueFrom:
             secretKeyRef:
-              name: license-data-v2
+              name: license-data
               key: LICENSE_KEY
       imagePullSecrets:
       - name: dockerhub

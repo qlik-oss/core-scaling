@@ -47,7 +47,7 @@ function copy_apps() {
 
 function upgrade() {
   # set up licensing info/secret
-  kubectl create secret generic license-data-v2 --from-literal LICENSE_KEY=$LICENSE_KEY --dry-run -o=yaml | kubectl apply -f -
+  kubectl create secret generic license-data --from-literal LICENSE_KEY=$LICENSE_KEY --dry-run -o=yaml | kubectl apply -f -
 
   # configuration
   kubectl apply -f ./config/grafana-datasources-cfg.yaml
