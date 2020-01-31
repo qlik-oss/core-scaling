@@ -19,6 +19,11 @@ defaultBackend:
       memory: "5Mi"
 
 controller:
+  image:
+    repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+    tag: "0.25.1"
+    pullPolicy: IfNotPresent
+
   replicaCount: 1
 
   publishService:
