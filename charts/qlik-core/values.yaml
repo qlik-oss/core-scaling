@@ -88,7 +88,7 @@ licenseService:
   name: license-service
   image:
     repository: qlikcore/licenses
-    tag: 1.37.0
+    tag: 3.5.0
     pullPolicy: IfNotPresent
   resources:
     requests:
