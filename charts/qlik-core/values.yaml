@@ -40,7 +40,7 @@ qix:
   replicas: 1
   image:
     repository: qlikcore/qix-session-placement-service
-    tag: 0.0.1-575
+    tag: 0.0.1-586
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -55,7 +55,7 @@ mira:
   replicas: 1
   image:
     repository: qlikcore/mira
-    tag: 2.0.0
+    tag: 3.0.0
     pullPolicy: IfNotPresent
   annotations:
     prometheus.io/scrape: 'true'
