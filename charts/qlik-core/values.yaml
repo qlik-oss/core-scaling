@@ -55,7 +55,7 @@ mira:
   replicas: 1
   image:
     repository: qlikcore/mira
-    tag: 2.0.0
+    tag: 3.0.0
     pullPolicy: IfNotPresent
   annotations:
     prometheus.io/scrape: 'true'
