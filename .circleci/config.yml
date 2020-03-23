@@ -46,15 +46,15 @@ jobs:
             apt-get -y install jq
             export TEST_CLUSTER_IP="$(kubectl get service nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
             npm run test
-      # - run:
-      #     name: Remove test cluster
-      #     command: |
-      #         GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove-cluster
-      #     when: always
-      # - run:
-      #     name: Remove test disk
-      #     command: GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove-disks
-      #     when: always
+      - run:
+          name: Remove test cluster
+          command: |
+              GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove-cluster
+          when: always
+      - run:
+          name: Remove test disk
+          command: GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh remove-disks
+          when: always
       - run:
           name: Deploy qlik-core scaling example if on master
           command: |
