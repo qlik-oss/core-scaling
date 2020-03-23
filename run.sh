@@ -66,7 +66,7 @@ function upgrade() {
   # qlik core stack - set acceptEULA to yes to accept the EULA
   helm upgrade --install --set engine.acceptEULA=$ACCEPT_EULA qlik-core ./charts/qlik-core
   helm repo add qlikoss https://qlik.bintray.com/osscharts
-  helm upgrade --install mira qlikoss/mira
+  helm upgrade --install --set image.tag="3.0.0" mira qlikoss/mira
 }
 
 function grafana() {

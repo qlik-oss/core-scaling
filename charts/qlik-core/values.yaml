@@ -6,7 +6,7 @@ engine:
   replicas: 1
   image:
     repository: qlikcore/engine
-    tag: 12.424.0
+    tag: 12.612.0
     pullPolicy: IfNotPresent
   annotations:
     prometheus.io/scrape: 'true'
@@ -40,7 +40,7 @@ qix:
   replicas: 1
   image:
     repository: qlikcore/qix-session-placement-service
-    tag: 0.0.1-406
+    tag: 0.0.1-586
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -49,34 +49,6 @@ qix:
       memory: "1Gi"
   port: 9455
   sessionsThreshold: 4500
-
-mira:
-  name: mira
-  replicas: 1
-  image:
-    repository: qlikcore/mira
-    tag: 2.0.0
-    pullPolicy: IfNotPresent
-  annotations:
-    prometheus.io/scrape: 'true'
-  resources:
-    requests:
-      memory: "200Mi"
-    limits:
-      memory: "200Mi"
-  ports:
-    - containerPort: 9100
-  env:
-  - name: MIRA_MODE
-    value: kubernetes
-  - name: MIRA_ENGINE_UPDATE_INTERVAL
-    value: "5000"
-  service:
-    ports:
-      - port: 9100
-        targetPort: 9100
-        protocol: TCP
-        name: http
 
 configMapPH:
   name: engine-prestop-hook

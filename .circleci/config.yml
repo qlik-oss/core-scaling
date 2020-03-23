@@ -29,7 +29,7 @@ jobs:
             chmod +x linux-amd64/helm && mv linux-amd64/helm /usr/local/bin/.
 
             # bootstrap cluster & nodes
-            GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh bootstrap
+            GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM K8S_VERSION="1.14" ./run.sh bootstrap
 
             # deploy configurations & services
             GCLOUD_ZONE=$TEST_CLUSTER_ZONE K8S_CLUSTER=cci-cluster-$CIRCLE_BUILD_NUM DISK_NAME=$DISK_NAME_TEST-$CIRCLE_BUILD_NUM ./run.sh upgrade
