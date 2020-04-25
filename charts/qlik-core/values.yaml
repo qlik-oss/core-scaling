@@ -6,7 +6,7 @@ engine:
   replicas: 1
   image:
     repository: qlikcore/engine
-    tag: 12.612.0
+    tag: 12.657.0
     pullPolicy: IfNotPresent
   annotations:
     prometheus.io/scrape: 'true'
@@ -40,7 +40,7 @@ qix:
   replicas: 1
   image:
     repository: qlikcore/qix-session-placement-service
-    tag: 0.0.1-592
+    tag: 0.0.1-596
     pullPolicy: IfNotPresent
   resources:
     requests:
