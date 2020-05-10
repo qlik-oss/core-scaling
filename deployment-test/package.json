@@ -8,6 +8,6 @@
   "devDependencies": {
     "@after-work.js/aw": "6.0.13",
     "enigma.js": "2.7.0",
-    "ws": "7.2.5"
+    "ws": "7.3.0"
   }
 }
