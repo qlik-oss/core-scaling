@@ -41,7 +41,7 @@ jobs:
           working_directory: ~/scaling/deployment-test
           command: |
             curl -sL https://deb.nodesource.com/setup_10.x | bash -
-            apt-get -y install nodejs
+            apt-get -y install nodejs npm
             npm install
             apt-get -y install jq
             export TEST_CLUSTER_IP="$(kubectl get service nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[0].ip')"
