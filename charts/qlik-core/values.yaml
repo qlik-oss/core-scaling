@@ -40,7 +40,7 @@ qix:
   replicas: 1
   image:
     repository: qlikcore/qix-session-placement-service
-    tag: 0.0.1-655
+    tag: 0.0.1-659
     pullPolicy: IfNotPresent
   resources:
     requests:
