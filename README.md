@@ -1,5 +1,7 @@
 # Autoscaling Qlik Core on Google Kubernetes Engine
 
+*As of 1 July 2020, Qlik Core is no longer available to new customers. No further maintenance will be done in this repository.*
+
 This use case shows how you can set up a Qlik Core application in a Google Kubernetes Engine (GKE) cluster so you can easily scale your application up or down to meet user demands.
 
 ## Prerequisites
